@@ -1,0 +1,1 @@
+LIVE SchoolPay build. Uses Supabase authentication and live students/payments/schools. Do not use production data until full security/backup testing is completed.
