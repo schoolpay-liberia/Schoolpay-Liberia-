@@ -1,20 +1,912 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SchoolPay Liberia</title><style>body{font-family:Arial;margin:0;background:#f4f7fb;color:#172033}header{background:#0b5cff;color:white;padding:20px}main{max-width:760px;margin:auto;padding:18px}.card{background:white;padding:20px;border-radius:15px;margin:14px 0;box-shadow:0 3px 15px #0001}input,select,button{width:100%;padding:13px;margin:7px 0;border-radius:9px;font-size:16px;box-sizing:border-box}input,select{border:1px solid #ddd}button{border:0;background:#0b5cff;color:white;font-weight:bold}.secondary{background:#eaf0ff;color:#0b5cff}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat{background:#f4f7ff;padding:15px;border-radius:10px}.stat b{display:block;font-size:24px;margin-top:5px}.ok{background:#e8f7ed;padding:12px;border-radius:9px}</style></head><body><header><h1>🏫 SchoolPay Liberia</h1><p>School management • Payments • Subscriptions</p></header><main id="app"></main><script>
-const app=document.getElementById("app"),URL="https://kojknrbjhrkctuefvrpp.supabase.co",KEY="sb_publishable_fs3RMvWadGqx55xdFrosxQ_34LtxiFA";let sb;
-async function connect(){try{let m=await import("https://esm.sh/@supabase/supabase-js@2");sb=m.createClient(URL,KEY);return 1}catch(e){return 0}}
-async function initSpeedInsights(){try{let si=await import("https://esm.sh/@vercel/speed-insights@1");si.injectSpeedInsights()}catch(e){console.log("Speed Insights not loaded:",e)}}
-function login(){app.innerHTML='<div class="card"><h2>School Login</h2><input id="email" placeholder="Email"><input id="pass" type="password" placeholder="Password"><button onclick="schoolLogin()">Login</button><button class="secondary" onclick="registerSchool()">Register Your School</button><button class="secondary" onclick="adminLogin()">Owner / Admin</button></div>'}
-async function schoolLogin(){if(!sb&&!await connect())return alert("Secure connection failed.");let r=await sb.auth.signInWithPassword({email:email.value,password:pass.value});if(r.error)return alert(r.error.message);schoolDash()}
-function registerSchool(){app.innerHTML='<div class="card"><h2>Register Your School</h2><input id="sn" placeholder="School name"><input id="cn" placeholder="Contact person"><input id="cp" placeholder="Phone"><input id="ce" placeholder="Email"><input id="rp" type="password" placeholder="Password"><button onclick="submitReg()">Submit Registration</button><button class="secondary" onclick="login()">Back</button></div>'}
-async function submitReg(){if(!sb&&!await connect())return alert("Secure connection failed.");let r=await sb.auth.signUp({email:ce.value,password:rp.value});if(r.error)return alert(r.error.message);let x=await sb.rpc("register_school",{p_name:sn.value,p_contact_name:cn.value,p_contact_phone:cp.value,p_contact_email:ce.value,p_logo_url:null});if(x.error)return alert(x.error.message);alert("Registration submitted for owner approval.");login()}
-async function schoolDash(){app.innerHTML='<h2>School Dashboard</h2><div class="grid"><div class="stat">Students<b id="sc">—</b></div><div class="stat">Payments<b>L$—</b></div></div><div class="card"><div class="ok">Secure school account connected.</div><button onclick="students()">Students</button><button onclick="payments()">Payments</button><button onclick="renew()">Subscription / Renewal</button></div><button class="secondary" onclick="logout()">Log out</button>';let r=await sb.from("students").select("id",{count:"exact",head:true});if(!r.error)sc.textContent=r.count??0}
-function students(){app.innerHTML='<div class="card"><h2>Students</h2><input id="stn" placeholder="Student name"><input id="sid" placeholder="Student ID"><select id="grade"><option>Class / Grade</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><button onclick="addStudent()">Save Student</button><button class="secondary" onclick="schoolDash()">Back</button></div>'}
-async function addStudent(){let r=await sb.from("students").insert({student_name:stn.value,student_id:sid.value,grade:grade.value});if(r.error)return alert(r.error.message);alert("Student saved.");schoolDash()}
-function payments(){app.innerHTML='<div class="card"><h2>Record Payment</h2><input id="pn" placeholder="Student ID"><input id="amt" type="number" placeholder="Amount (L$)"><input id="ref" placeholder="Transaction reference"><button onclick="addPayment()">Record Payment</button><button class="secondary" onclick="schoolDash()">Back</button></div>'}
-async function addPayment(){let r=await sb.from("payments").insert({student_id:pn.value,amount:amt.value,transaction_reference:ref.value});if(r.error)return alert(r.error.message);alert("Payment recorded.");schoolDash()}
-function renew(){app.innerHTML='<div class="card"><h2>Subscription Renewal</h2><p>Send renewal request for owner approval.</p><input id="ra" type="number" placeholder="Amount (L$)"><input id="rr" placeholder="Transaction reference"><button onclick="sendRenew()">Submit Renewal</button><button class="secondary" onclick="schoolDash()">Back</button></div>'}
-async function sendRenew(){let r=await sb.rpc("submit_subscription_renewal",{p_amount:ra.value,p_transaction_reference:rr.value,p_notes:"SchoolPay renewal"});if(r.error)return alert(r.error.message);alert("Renewal submitted.");schoolDash()}
-function adminLogin(){app.innerHTML='<div class="card"><h2>Owner Admin</h2><input id="ae" placeholder="Admin email"><input id="ap" type="password" placeholder="Admin password"><button onclick="admin()">Sign In</button><button class="secondary" onclick="login()">Back</button></div>'}
-async function admin(){if(!sb&&!await connect())return alert("Secure connection failed.");let r=await sb.auth.signInWithPassword({email:ae.value,password:ap.value});if(r.error)return alert(r.error.message);let o=await sb.rpc("is_owner");if(o.error||!o.data)return alert("This account is not an owner account.");adminDash()}
-async function adminDash(){let s=await sb.from("schools").select("*").order("created_at",{ascending:false});let rows=s.data||[];app.innerHTML='<h2>Owner Admin Dashboard</h2><div class="card"><h3>Schools</h3>'+((rows.map(x=>'<p><b>'+x.name+'</b> — '+x.status+'</p>').join(''))||'<p>No schools yet.</p>')+'</div><div class="card"><h3>Subscriptions</h3><p>Review school subscription status and renewals.</p></div><button class="secondary" onclick="logout()">Log out</button>'}
-async function logout(){await sb?.auth.signOut();login()}connect();login();initSpeedInsights();
-</script></main></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SchoolPay Liberia</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #172033;
+    }
+
+    header {
+      background: #0b5cff;
+      color: white;
+      padding: 22px;
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+    }
+
+    main {
+      max-width: 760px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 15px;
+      margin-bottom: 18px;
+      box-shadow: 0 3px 15px rgba(0,0,0,.08);
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 14px;
+      margin: 7px 0;
+      border-radius: 9px;
+      font-size: 16px;
+    }
+
+    input, select {
+      border: 1px solid #ddd;
+      background: white;
+    }
+
+    button {
+      border: none;
+      background: #0b5cff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #eaf0ff;
+      color: #0b5cff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat {
+      background: #eef3ff;
+      padding: 18px;
+      border-radius: 12px;
+    }
+
+    .stat b {
+      display: block;
+      font-size: 25px;
+      margin-top: 7px;
+    }
+
+    .success {
+      background: #e8f7ed;
+      padding: 13px;
+      border-radius: 9px;
+      margin-bottom: 12px;
+    }
+
+    .school {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .error {
+      color: #b00020;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🏫 SchoolPay Liberia</h1>
+  <p>School Management • Payments • Subscriptions</p>
+</header>
+
+<main id="app"></main>
+
+<script>
+
+const SUPABASE_URL =
+  "https://kojknrbjhrkctuefvrpp.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_fs3RMvWadGqx55xdFrosxQ_34LtxiFA";
+
+let accessToken =
+  localStorage.getItem("schoolpay_token") || "";
+
+const app = document.getElementById("app");
+
+
+/* =========================
+   SUPABASE CONNECTION
+========================= */
+
+async function supabase(path, options = {}) {
+
+  const headers = {
+    "apikey": SUPABASE_KEY,
+    "Content-Type": "application/json",
+    ...(options.headers || {})
+  };
+
+  if (accessToken) {
+    headers["Authorization"] =
+      "Bearer " + accessToken;
+  }
+
+  const response = await fetch(
+    SUPABASE_URL + path,
+    {
+      ...options,
+      headers
+    }
+  );
+
+  const text = await response.text();
+
+  let data = null;
+
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = null;
+  }
+
+  if (!response.ok) {
+
+    throw new Error(
+      data?.message ||
+      data?.msg ||
+      data?.error_description ||
+      text ||
+      "Supabase request failed"
+    );
+  }
+
+  return data;
+}
+
+
+/* =========================
+   HOME / LOGIN
+========================= */
+
+function showLogin() {
+
+  app.innerHTML = `
+
+    <div class="card">
+
+      <h2>School Login</h2>
+
+      <input
+        id="loginEmail"
+        type="email"
+        placeholder="Email"
+      >
+
+      <input
+        id="loginPassword"
+        type="password"
+        placeholder="Password"
+      >
+
+      <button onclick="schoolLogin()">
+        Login
+      </button>
+
+      <button
+        class="secondary"
+        onclick="showRegistration()">
+        Register Your School
+      </button>
+
+      <button
+        class="secondary"
+        onclick="showAdminLogin()">
+        Owner / Admin
+      </button>
+
+    </div>
+  `;
+}
+
+
+/* =========================
+   SCHOOL LOGIN
+========================= */
+
+async function schoolLogin() {
+
+  try {
+
+    const result = await supabase(
+      "/auth/v1/token?grant_type=password",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          email: loginEmail.value,
+          password: loginPassword.value
+        })
+      }
+    );
+
+    accessToken = result.access_token;
+
+    localStorage.setItem(
+      "schoolpay_token",
+      accessToken
+    );
+
+    showSchoolDashboard();
+
+  } catch (error) {
+
+    alert(
+      "Login failed:\n\n" +
+      error.message
+    );
+  }
+}
+
+
+/* =========================
+   SCHOOL REGISTRATION
+========================= */
+
+function showRegistration() {
+
+  app.innerHTML = `
+
+    <div class="card">
+
+      <h2>Register Your School</h2>
+
+      <input
+        id="schoolName"
+        placeholder="School name"
+      >
+
+      <input
+        id="contactName"
+        placeholder="Contact person's name"
+      >
+
+      <input
+        id="schoolPhone"
+        placeholder="Phone number"
+      >
+
+      <input
+        id="schoolEmail"
+        type="email"
+        placeholder="Email"
+      >
+
+      <input
+        id="schoolPassword"
+        type="password"
+        placeholder="Password"
+      >
+
+      <button onclick="registerSchool()">
+        Submit Registration
+      </button>
+
+      <button
+        class="secondary"
+        onclick="showLogin()">
+        Back
+      </button>
+
+    </div>
+  `;
+}
+
+
+async function registerSchool() {
+
+  try {
+
+    const account = await supabase(
+      "/auth/v1/signup",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          email: schoolEmail.value,
+          password: schoolPassword.value
+        })
+      }
+    );
+
+    if (account.access_token) {
+
+      accessToken =
+        account.access_token;
+
+      localStorage.setItem(
+        "schoolpay_token",
+        accessToken
+      );
+    }
+
+    await supabase(
+      "/rest/v1/rpc/register_school",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          p_name: schoolName.value,
+          p_contact_name: contactName.value,
+          p_contact_phone: schoolPhone.value,
+          p_contact_email: schoolEmail.value,
+          p_logo_url: null
+        })
+      }
+    );
+
+    alert(
+      "Your school registration has been submitted."
+    );
+
+    showLogin();
+
+  } catch (error) {
+
+    alert(
+      "Registration failed:\n\n" +
+      error.message
+    );
+  }
+}
+
+
+/* =========================
+   SCHOOL DASHBOARD
+========================= */
+
+async function showSchoolDashboard() {
+
+  app.innerHTML = `
+
+    <h2>School Dashboard</h2>
+
+    <div class="grid">
+
+      <div class="stat">
+        Students
+        <b id="studentCount">0</b>
+      </div>
+
+      <div class="stat">
+        Payments
+        <b>L$—</b>
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="success">
+        ✓ School account connected
+      </div>
+
+      <button onclick="showStudents()">
+        👨‍🎓 Students
+      </button>
+
+      <button onclick="showPayments()">
+        💰 Payments
+      </button>
+
+      <button onclick="showRenewal()">
+        📅 Subscription / Renewal
+      </button>
+
+    </div>
+
+    <button
+      class="secondary"
+      onclick="logout()">
+      Log out
+    </button>
+  `;
+
+  try {
+
+    const students =
+      await supabase(
+        "/rest/v1/students?select=id"
+      );
+
+    document.getElementById(
+      "studentCount"
+    ).textContent = students.length;
+
+  } catch {
+
+    document.getElementById(
+      "studentCount"
+    ).textContent = "0";
+  }
+}
+
+
+/* =========================
+   STUDENTS
+========================= */
+
+function showStudents() {
+
+  app.innerHTML = `
+
+    <div class="card">
+
+      <h2>Students</h2>
+
+      <input
+        id="studentName"
+        placeholder="Student name"
+      >
+
+      <input
+        id="studentId"
+        placeholder="Student ID"
+      >
+
+      <select id="studentGrade">
+
+        <option value="">
+          Select Class / Grade
+        </option>
+
+        <option>Grade 7</option>
+        <option>Grade 8</option>
+        <option>Grade 9</option>
+        <option>Grade 10</option>
+        <option>Grade 11</option>
+        <option>Grade 12</option>
+
+      </select>
+
+      <button onclick="addStudent()">
+        Save Student
+      </button>
+
+      <button
+        class="secondary"
+        onclick="showSchoolDashboard()">
+        Back
+      </button>
+
+    </div>
+  `;
+}
+
+
+async function addStudent() {
+
+  try {
+
+    await supabase(
+      "/rest/v1/students",
+      {
+        method: "POST",
+
+        headers: {
+          "Prefer": "return=minimal"
+        },
+
+        body: JSON.stringify({
+
+          student_name:
+            studentName.value,
+
+          student_id:
+            studentId.value,
+
+          grade:
+            studentGrade.value
+        })
+      }
+    );
+
+    alert("Student saved successfully.");
+
+    showSchoolDashboard();
+
+  } catch (error) {
+
+    alert(
+      "Could not save student:\n\n" +
+      error.message
+    );
+  }
+}
+
+
+/* =========================
+   PAYMENTS
+========================= */
+
+function showPayments() {
+
+  app.innerHTML = `
+
+    <div class="card">
+
+      <h2>Record Payment</h2>
+
+      <input
+        id="paymentStudentId"
+        placeholder="Student ID"
+      >
+
+      <input
+        id="paymentAmount"
+        type="number"
+        placeholder="Amount (L$)"
+      >
+
+      <input
+        id="paymentReference"
+        placeholder="Transaction reference"
+      >
+
+      <button onclick="recordPayment()">
+        Record Payment
+      </button>
+
+      <button
+        class="secondary"
+        onclick="showSchoolDashboard()">
+        Back
+      </button>
+
+    </div>
+  `;
+}
+
+
+async function recordPayment() {
+
+  try {
+
+    await supabase(
+      "/rest/v1/payments",
+      {
+        method: "POST",
+
+        headers: {
+          "Prefer": "return=minimal"
+        },
+
+        body: JSON.stringify({
+
+          student_id:
+            paymentStudentId.value,
+
+          amount:
+            paymentAmount.value,
+
+          transaction_reference:
+            paymentReference.value
+
+        })
+      }
+    );
+
+    alert("Payment recorded successfully.");
+
+    showSchoolDashboard();
+
+  } catch (error) {
+
+    alert(
+      "Could not record payment:\n\n" +
+      error.message
+    );
+  }
+}
+
+
+/* =========================
+   SUBSCRIPTION
+========================= */
+
+function showRenewal() {
+
+  app.innerHTML = `
+
+    <div class="card">
+
+      <h2>Subscription Renewal</h2>
+
+      <p>
+        Submit your renewal request
+        for owner approval.
+      </p>
+
+      <input
+        id="renewAmount"
+        type="number"
+        placeholder="Amount (L$)"
+      >
+
+      <input
+        id="renewReference"
+        placeholder="Transaction reference"
+      >
+
+      <button onclick="submitRenewal()">
+        Submit Renewal
+      </button>
+
+      <button
+        class="secondary"
+        onclick="showSchoolDashboard()">
+        Back
+      </button>
+
+    </div>
+  `;
+}
+
+
+async function submitRenewal() {
+
+  try {
+
+    await supabase(
+      "/rest/v1/rpc/submit_subscription_renewal",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+
+          p_amount:
+            renewAmount.value,
+
+          p_transaction_reference:
+            renewReference.value,
+
+          p_notes:
+            "SchoolPay renewal"
+
+        })
+      }
+    );
+
+    alert(
+      "Renewal request submitted."
+    );
+
+    showSchoolDashboard();
+
+  } catch (error) {
+
+    alert(
+      "Could not submit renewal:\n\n" +
+      error.message
+    );
+  }
+}
+
+
+/* =========================
+   OWNER / ADMIN LOGIN
+========================= */
+
+function showAdminLogin() {
+
+  app.innerHTML = `
+
+    <div class="card">
+
+      <h2>Owner / Admin</h2>
+
+      <input
+        id="adminEmail"
+        type="email"
+        placeholder="Admin email"
+      >
+
+      <input
+        id="adminPassword"
+        type="password"
+        placeholder="Admin password"
+      >
+
+      <button onclick="adminLogin()">
+        Sign In
+      </button>
+
+      <button
+        class="secondary"
+        onclick="showLogin()">
+        Back
+      </button>
+
+    </div>
+  `;
+}
+
+
+async function adminLogin() {
+
+  try {
+
+    const result = await supabase(
+      "/auth/v1/token?grant_type=password",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+
+          email:
+            adminEmail.value,
+
+          password:
+            adminPassword.value
+
+        })
+      }
+    );
+
+    accessToken =
+      result.access_token;
+
+    localStorage.setItem(
+      "schoolpay_token",
+      accessToken
+    );
+
+    const owner =
+      await supabase(
+        "/rest/v1/rpc/is_owner",
+        {
+          method: "POST"
+        }
+      );
+
+    if (!owner) {
+
+      throw new Error(
+        "This account is not an owner account."
+      );
+    }
+
+    showAdminDashboard();
+
+  } catch (error) {
+
+    alert(
+      "Admin login failed:\n\n" +
+      error.message
+    );
+  }
+}
+
+
+/* =========================
+   OWNER DASHBOARD
+========================= */
+
+async function showAdminDashboard() {
+
+  try {
+
+    const schools =
+      await supabase(
+        "/rest/v1/schools?select=*&order=created_at.desc"
+      );
+
+    let schoolList = "";
+
+    if (schools.length === 0) {
+
+      schoolList =
+        "<p>No schools registered yet.</p>";
+
+    } else {
+
+      schools.forEach(function(school) {
+
+        schoolList += `
+
+          <div class="school">
+
+            <b>
+              ${school.name || "School"}
+            </b>
+
+            <br>
+
+            Status:
+            ${school.status || "Pending"}
+
+          </div>
+
+        `;
+      });
+    }
+
+    app.innerHTML = `
+
+      <h2>👑 Owner Dashboard</h2>
+
+      <div class="card">
+
+        <h3>Registered Schools</h3>
+
+        ${schoolList}
+
+      </div>
+
+      <div class="card">
+
+        <h3>Subscriptions</h3>
+
+        <p>
+          Review school subscriptions
+          and renewal requests.
+        </p>
+
+      </div>
+
+      <button
+        class="secondary"
+        onclick="logout()">
+        Log out
+      </button>
+
+    `;
+
+  } catch (error) {
+
+    alert(
+      "Could not load Admin Dashboard:\n\n" +
+      error.message
+    );
+  }
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+function logout() {
+
+  accessToken = "";
+
+  localStorage.removeItem(
+    "schoolpay_token"
+  );
+
+  showLogin();
+}
+
+
+/* =========================
+   START APP
+========================= */
+
+showLogin();
+
+</script>
+
+</body>
+</html>
