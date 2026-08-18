@@ -69,12 +69,16 @@
 
     button.approve {
       background: #16803c;
-      color: white;
     }
 
     button.reject {
-      background: #d93025;
-      color: white;
+      background: #c62828;
+    }
+
+    button.small {
+      width: auto;
+      padding: 10px 16px;
+      margin-right: 6px;
     }
 
     .grid {
@@ -103,38 +107,58 @@
     }
 
     .pending {
-      background: #fff5d6;
-      padding: 13px;
-      border-radius: 9px;
-      margin-top: 12px;
+      background: #fff7df;
+      padding: 15px;
       border-radius: 10px;
+      margin-bottom: 12px;
     }
 
     .rejected {
-      background: #ffe8e8;
-      padding: 13px;
-      border-radius: 9px;
-      margin-top: 12px;
-    }
-
-    .active {
-      background: #e8f7ed;
-      padding: 13px;
-      border-radius: 9px;
-      margin-top: 12px;
+      background: #ffe9e9;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 12px;
     }
 
     .school {
-      padding: 18px 0;
+      padding: 16px 0;
       border-bottom: 1px solid #eee;
-    }
-
-    .school:last-child {
-      border-bottom: none;
     }
 
     .school-actions {
       margin-top: 10px;
+    }
+
+    .status {
+      font-weight: bold;
+      text-transform: capitalize;
+    }
+
+    .status.pending-text {
+      color: #b77900;
+    }
+
+    .status.active-text {
+      color: #16803c;
+    }
+
+    .status.rejected-text {
+      color: #c62828;
+    }
+
+    .balance {
+      background: #eef3ff;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 12px;
+    }
+
+    .receipt-preview {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 15px;
     }
 
     .error {
@@ -142,14 +166,14 @@
       margin-top: 10px;
     }
 
-    .small {
-      color: #666;
-      font-size: 14px;
-    }
-
     @media (max-width: 600px) {
       .grid {
         grid-template-columns: 1fr;
+      }
+
+      button.small {
+        width: 100%;
+        margin-right: 0;
       }
     }
   </style>
@@ -229,6 +253,21 @@ async function supabase(path, options = {}) {
 
 
 /* =========================
+   SAFE HTML
+========================= */
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+/* =========================
    HOME / LOGIN
 ========================= */
 
@@ -287,8 +326,8 @@ async function schoolLogin() {
         method: "POST",
 
         body: JSON.stringify({
-          email: loginEmail.value,
-          password: loginPassword.value
+          email: document.getElementById("loginEmail").value,
+          password: document.getElementById("loginPassword").value
         })
       }
     );
@@ -376,8 +415,11 @@ async function registerSchool() {
         method: "POST",
 
         body: JSON.stringify({
-          email: schoolEmail.value,
-          password: schoolPassword.value
+          email:
+            document.getElementById("schoolEmail").value,
+
+          password:
+            document.getElementById("schoolPassword").value
         })
       }
     );
@@ -399,11 +441,20 @@ async function registerSchool() {
         method: "POST",
 
         body: JSON.stringify({
-          p_name: schoolName.value,
-          p_contact_name: contactName.value,
-          p_contact_phone: schoolPhone.value,
-          p_contact_email: schoolEmail.value,
-          p_logo_url: null
+          p_name:
+            document.getElementById("schoolName").value,
+
+          p_contact_name:
+            document.getElementById("contactName").value,
+
+          p_contact_phone:
+            document.getElementById("schoolPhone").value,
+
+          p_contact_email:
+            document.getElementById("schoolEmail").value,
+
+          p_logo_url:
+            null
         })
       }
     );
@@ -443,10 +494,12 @@ async function showSchoolDashboard() {
 
       <div class="stat">
         Payments
-        <b>L$—</b>
+        <b id="paymentTotal">L$0</b>
       </div>
 
     </div>
+
+    <div id="schoolStatus"></div>
 
     <div class="card">
 
@@ -459,7 +512,7 @@ async function showSchoolDashboard() {
       </button>
 
       <button onclick="showPayments()">
-        💰 Payments
+        💰 Payments / Tuition
       </button>
 
       <button onclick="showRenewal()">
@@ -492,6 +545,32 @@ async function showSchoolDashboard() {
       "studentCount"
     ).textContent = "0";
   }
+
+  try {
+
+    const payments =
+      await supabase(
+        "/rest/v1/payments?select=amount"
+      );
+
+    const total =
+      (payments || []).reduce(
+        (sum, payment) =>
+          sum + Number(payment.amount || 0),
+        0
+      );
+
+    document.getElementById(
+      "paymentTotal"
+    ).textContent =
+      "L$" + total.toLocaleString();
+
+  } catch {
+
+    document.getElementById(
+      "paymentTotal"
+    ).textContent = "L$0";
+  }
 }
 
 
@@ -505,11 +584,11 @@ function showStudents() {
 
     <div class="card">
 
-      <h2>Students</h2>
+      <h2>👨‍🎓 Students</h2>
 
       <input
         id="studentName"
-        placeholder="Student name"
+        placeholder="Student full name"
       >
 
       <input
@@ -532,6 +611,13 @@ function showStudents() {
 
       </select>
 
+      <input
+        id="studentTuition"
+        type="number"
+        min="0"
+        placeholder="Tuition amount (L$)"
+      >
+
       <button onclick="addStudent()">
         Save Student
       </button>
@@ -547,34 +633,73 @@ function showStudents() {
 }
 
 
+/* =========================
+   ADD STUDENT
+========================= */
+
 async function addStudent() {
+
+  const name =
+    document.getElementById("studentName").value.trim();
+
+  const studentId =
+    document.getElementById("studentId").value.trim();
+
+  const grade =
+    document.getElementById("studentGrade").value;
+
+  const tuition =
+    Number(
+      document.getElementById("studentTuition").value
+    );
+
+  if (!name) {
+    alert("Please enter the student's name.");
+    return;
+  }
+
+  if (!studentId) {
+    alert("Please enter the student's ID.");
+    return;
+  }
+
+  if (!grade) {
+    alert("Please select the student's class.");
+    return;
+  }
+
+  if (isNaN(tuition) || tuition < 0) {
+    alert("Please enter a valid tuition amount.");
+    return;
+  }
 
   try {
 
     await supabase(
-      "/rest/v1/students",
+      "/rest/v1/rpc/add_student",
       {
         method: "POST",
 
-        headers: {
-          "Prefer": "return=minimal"
-        },
-
         body: JSON.stringify({
 
-          student_name:
-            studentName.value,
+          p_student_id:
+            studentId,
 
-          student_id:
-            studentId.value,
+          p_full_name:
+            name,
 
-          grade:
-            studentGrade.value
+          p_class_name:
+            grade,
+
+          p_tuition_amount:
+            tuition
         })
       }
     );
 
-    alert("Student saved successfully.");
+    alert(
+      "Student saved successfully."
+    );
 
     showSchoolDashboard();
 
@@ -589,7 +714,7 @@ async function addStudent() {
 
 
 /* =========================
-   PAYMENTS
+   PAYMENTS / TUITION
 ========================= */
 
 function showPayments() {
@@ -598,26 +723,64 @@ function showPayments() {
 
     <div class="card">
 
-      <h2>Record Payment</h2>
+      <h2>💰 Tuition Payment</h2>
+
+      <p>
+        Enter the student's ID to check
+        their tuition balance.
+      </p>
 
       <input
         id="paymentStudentId"
         placeholder="Student ID"
       >
 
+      <button
+        class="secondary"
+        onclick="checkStudentBalance()">
+        Check Tuition Balance
+      </button>
+
+      <div id="studentBalance"></div>
+
       <input
         id="paymentAmount"
         type="number"
-        placeholder="Amount (L$)"
+        min="1"
+        placeholder="Amount paid (L$)"
       >
 
+      <select id="paymentMethod">
+
+        <option value="">
+          Select Payment Method
+        </option>
+
+        <option value="Cash">
+          Cash
+        </option>
+
+        <option value="Mobile Money">
+          Mobile Money
+        </option>
+
+        <option value="Bank Transfer">
+          Bank Transfer
+        </option>
+
+        <option value="Other">
+          Other
+        </option>
+
+      </select>
+
       <input
-        id="paymentReference"
-        placeholder="Transaction reference"
+        id="paymentNotes"
+        placeholder="Payment notes (optional)"
       >
 
       <button onclick="recordPayment()">
-        Record Payment
+        Record Payment & Generate Receipt
       </button>
 
       <button
@@ -631,35 +794,182 @@ function showPayments() {
 }
 
 
-async function recordPayment() {
+/* =========================
+   CHECK BALANCE
+========================= */
+
+async function checkStudentBalance() {
+
+  const studentId =
+    document.getElementById(
+      "paymentStudentId"
+    ).value.trim();
+
+  if (!studentId) {
+    alert("Please enter a Student ID.");
+    return;
+  }
 
   try {
 
-    await supabase(
-      "/rest/v1/payments",
-      {
-        method: "POST",
+    const result =
+      await supabase(
+        "/rest/v1/rpc/get_student_payment_summary",
+        {
+          method: "POST",
 
-        headers: {
-          "Prefer": "return=minimal"
-        },
+          body: JSON.stringify({
+            p_student_id:
+              studentId
+          })
+        }
+      );
 
-        body: JSON.stringify({
+    const student =
+      Array.isArray(result)
+        ? result[0]
+        : result;
 
-          student_id:
-            paymentStudentId.value,
+    if (!student) {
+      throw new Error(
+        "Student not found."
+      );
+    }
 
-          amount:
-            paymentAmount.value,
+    document.getElementById(
+      "studentBalance"
+    ).innerHTML = `
 
-          transaction_reference:
-            paymentReference.value
+      <div class="balance">
 
-        })
-      }
+        <b>
+          ${escapeHtml(student.student_name)}
+        </b>
+
+        <p>
+          Tuition:
+          <strong>
+            L$${Number(student.tuition_amount || 0).toLocaleString()}
+          </strong>
+        </p>
+
+        <p>
+          Total Paid:
+          <strong>
+            L$${Number(student.total_paid || 0).toLocaleString()}
+          </strong>
+        </p>
+
+        <p>
+          Remaining Balance:
+          <strong>
+            L$${Number(student.remaining_balance || 0).toLocaleString()}
+          </strong>
+        </p>
+
+      </div>
+    `;
+
+  } catch (error) {
+
+    document.getElementById(
+      "studentBalance"
+    ).innerHTML = `
+
+      <div class="rejected">
+        ${escapeHtml(error.message)}
+      </div>
+
+    `;
+  }
+}
+
+
+/* =========================
+   RECORD PAYMENT
+========================= */
+
+async function recordPayment() {
+
+  const studentId =
+    document.getElementById(
+      "paymentStudentId"
+    ).value.trim();
+
+  const amount =
+    Number(
+      document.getElementById(
+        "paymentAmount"
+      ).value
     );
 
-    alert("Payment recorded successfully.");
+  const method =
+    document.getElementById(
+      "paymentMethod"
+    ).value;
+
+  const notes =
+    document.getElementById(
+      "paymentNotes"
+    ).value.trim();
+
+  if (!studentId) {
+    alert("Please enter the Student ID.");
+    return;
+  }
+
+  if (!amount || amount <= 0) {
+    alert("Please enter a valid payment amount.");
+    return;
+  }
+
+  if (!method) {
+    alert("Please select a payment method.");
+    return;
+  }
+
+  try {
+
+    const result =
+      await supabase(
+        "/rest/v1/rpc/record_student_payment",
+        {
+          method: "POST",
+
+          body: JSON.stringify({
+
+            p_student_id:
+              studentId,
+
+            p_amount:
+              amount,
+
+            p_payment_method:
+              method,
+
+            p_notes:
+              notes || null
+
+          })
+        }
+      );
+
+    const receipt =
+      Array.isArray(result)
+        ? result[0]
+        : result;
+
+    if (!receipt) {
+      throw new Error(
+        "Payment was recorded but receipt information was not returned."
+      );
+    }
+
+    alert(
+      "Payment recorded successfully!"
+    );
+
+    printReceipt(receipt);
 
     showSchoolDashboard();
 
@@ -674,482 +984,227 @@ async function recordPayment() {
 
 
 /* =========================
-   SUBSCRIPTION
+   PRINT RECEIPT
 ========================= */
 
-function showRenewal() {
+function printReceipt(receipt) {
 
-  app.innerHTML = `
-
-    <div class="card">
-
-      <h2>Subscription Renewal</h2>
-
-      <p>
-        Submit your renewal request
-        for owner approval.
-      </p>
-
-      <input
-        id="renewAmount"
-        type="number"
-        placeholder="Amount (L$)"
-      >
-
-      <input
-        id="renewReference"
-        placeholder="Transaction reference"
-      >
-
-      <button onclick="submitRenewal()">
-        Submit Renewal
-      </button>
-
-      <button
-        class="secondary"
-        onclick="showSchoolDashboard()">
-        Back
-      </button>
-
-    </div>
-  `;
-}
-
-
-async function submitRenewal() {
-
-  try {
-
-    await supabase(
-      "/rest/v1/rpc/submit_subscription_renewal",
-      {
-        method: "POST",
-
-        body: JSON.stringify({
-
-          p_amount:
-            renewAmount.value,
-
-          p_transaction_reference:
-            renewReference.value,
-
-          p_notes:
-            "SchoolPay renewal"
-
-        })
-      }
+  const receiptWindow =
+    window.open(
+      "",
+      "_blank",
+      "width=700,height=800"
     );
+
+  if (!receiptWindow) {
 
     alert(
-      "Renewal request submitted."
+      "The receipt window was blocked. Please allow pop-ups and try again."
     );
 
-    showSchoolDashboard();
-
-  } catch (error) {
-
-    alert(
-      "Could not submit renewal:\n\n" +
-      error.message
-    );
+    return;
   }
-}
 
-
-/* =========================
-   OWNER / ADMIN LOGIN
-========================= */
-
-function showAdminLogin() {
-
-  app.innerHTML = `
-
-    <div class="card">
-
-      <h2>Owner / Admin</h2>
-
-      <input
-        id="adminEmail"
-        type="email"
-        placeholder="Admin email"
-      >
-
-      <input
-        id="adminPassword"
-        type="password"
-        placeholder="Admin password"
-      >
-
-      <button onclick="adminLogin()">
-        Sign In
-      </button>
-
-      <button
-        class="secondary"
-        onclick="showLogin()">
-        Back
-      </button>
-
-    </div>
-  `;
-}
-
-
-async function adminLogin() {
-
-  try {
-
-    const result = await supabase(
-      "/auth/v1/token?grant_type=password",
-      {
-        method: "POST",
-
-        body: JSON.stringify({
-
-          email:
-            adminEmail.value,
-
-          password:
-            adminPassword.value
-
-        })
-      }
+  const schoolName =
+    escapeHtml(
+      receipt.school_name ||
+      "SchoolPay Liberia School"
     );
 
-    accessToken =
-      result.access_token;
-
-    localStorage.setItem(
-      "schoolpay_token",
-      accessToken
+  const studentName =
+    escapeHtml(
+      receipt.student_name
     );
 
-    const owner =
-      await supabase(
-        "/rest/v1/rpc/is_owner",
-        {
-          method: "POST"
-        }
-      );
-
-    if (!owner) {
-
-      throw new Error(
-        "This account is not an owner account."
-      );
-    }
-
-    showAdminDashboard();
-
-  } catch (error) {
-
-    alert(
-      "Admin login failed:\n\n" +
-      error.message
+  const receiptNumber =
+    escapeHtml(
+      receipt.receipt_number
     );
-  }
-}
 
+  const method =
+    escapeHtml(
+      receipt.payment_method
+    );
 
-/* =========================
-   OWNER DASHBOARD
-========================= */
+  const paidAt =
+    receipt.paid_at
+      ? new Date(
+          receipt.paid_at
+        ).toLocaleString()
+      : new Date().toLocaleString();
 
-async function showAdminDashboard() {
+  const tuition =
+    Number(
+      receipt.tuition_amount || 0
+    ).toLocaleString();
 
-  try {
+  const totalPaid =
+    Number(
+      receipt.total_paid || 0
+    ).toLocaleString();
 
-    const schools =
-      await supabase(
-        "/rest/v1/schools?select=*&order=created_at.desc"
-      );
+  const remaining =
+    Number(
+      receipt.remaining_balance || 0
+    ).toLocaleString();
 
-    let schoolList = "";
+  const amount =
+    Number(
+      receipt.payment_amount || 0
+    ).toLocaleString();
 
-    if (!schools || schools.length === 0) {
+  receiptWindow.document.write(`
 
-      schoolList =
-        "<p>No schools registered yet.</p>";
+    <!DOCTYPE html>
 
-    } else {
+    <html>
 
-      schools.forEach(function(school) {
+    <head>
 
-        let statusHTML = "";
+      <title>
+        SchoolPay Receipt ${receiptNumber}
+      </title>
 
-        if (school.status === "pending") {
+      <style>
 
-          statusHTML = `
-
-            <div class="pending">
-
-              <strong>
-                🟡 Pending Approval
-              </strong>
-
-              <div class="school-actions">
-
-                <button
-                  class="approve"
-                  onclick="approveSchool('${school.id}')">
-                  ✅ Approve School
-                </button>
-
-                <button
-                  class="reject"
-                  onclick="rejectSchool('${school.id}')">
-                  ❌ Reject School
-                </button>
-
-              </div>
-
-            </div>
-
-          `;
-
-        } else if (school.status === "active") {
-
-          statusHTML = `
-
-            <div class="active">
-
-              <strong>
-                🟢 Active
-              </strong>
-
-              ${
-                school.subscription_expires_at
-                ? `
-                  <p>
-                    Subscription expires:
-                    ${new Date(
-                      school.subscription_expires_at
-                    ).toLocaleDateString()}
-                  </p>
-                `
-                : ""
-              }
-
-            </div>
-
-          `;
-
-        } else if (school.status === "rejected") {
-
-          statusHTML = `
-
-            <div class="rejected">
-
-              <strong>
-                🔴 Rejected
-              </strong>
-
-            </div>
-
-          `;
-
-        } else {
-
-          statusHTML = `
-
-            <div class="pending">
-
-              <strong>
-                Status: ${school.status || "Unknown"}
-              </strong>
-
-            </div>
-
-          `;
+        body {
+          font-family: Arial, sans-serif;
+          padding: 30px;
+          color: #172033;
         }
 
+        .receipt {
+          max-width: 600px;
+          margin: auto;
+          border: 2px solid #0b5cff;
+          padding: 25px;
+        }
 
-        schoolList += `
+        .header {
+          text-align: center;
+          border-bottom: 1px solid #ddd;
+          padding-bottom: 15px;
+        }
 
-          <div class="school">
+        .header h1 {
+          color: #0b5cff;
+          margin: 0;
+        }
 
-            <h3>
-              🏫 ${school.name || "School"}
-            </h3>
+        .row {
+          display: flex;
+          justify-content: space-between;
+          padding: 10px 0;
+          border-bottom: 1px solid #eee;
+        }
 
-            <p>
-              <strong>Contact:</strong>
-              ${school.contact_name || "—"}
-            </p>
+        .total {
+          font-size: 20px;
+          font-weight: bold;
+        }
 
-            <p>
-              <strong>Phone:</strong>
-              ${school.contact_phone || "—"}
-            </p>
+        .footer {
+          text-align: center;
+          margin-top: 30px;
+          padding-top: 15px;
+          border-top: 1px solid #ddd;
+          color: #555;
+        }
 
-            <p>
-              <strong>Email:</strong>
-              ${school.contact_email || "—"}
-            </p>
+        @media print {
+          body {
+            padding: 0;
+          }
+        }
 
-            ${statusHTML}
+      </style>
 
-          </div>
+    </head>
 
-        `;
-      });
-    }
+    <body>
 
+      <div class="receipt">
 
-    app.innerHTML = `
+        <div class="header">
 
-      <h2>👑 Owner Dashboard</h2>
+          <h1>
+            🏫 SchoolPay Liberia
+          </h1>
 
-      <div class="card">
+          <p>
+            OFFICIAL TUITION PAYMENT RECEIPT
+          </p>
 
-        <h3>Registered Schools</h3>
+          <p>
+            Receipt No:
+            <strong>
+              ${receiptNumber}
+            </strong>
+          </p>
 
-        ${schoolList}
-
-      </div>
-
-      <div class="card">
-
-        <h3>Subscriptions</h3>
+        </div>
 
         <p>
-          Approved schools receive a
-          6-month subscription.
+          <strong>School:</strong>
+          ${schoolName}
         </p>
 
-      </div>
+        <p>
+          <strong>Student:</strong>
+          ${studentName}
+        </p>
 
-      <button
-        class="secondary"
-        onclick="logout()">
-        Log out
-      </button>
+        <p>
+          <strong>Date:</strong>
+          ${escapeHtml(paidAt)}
+        </p>
 
-    `;
+        <div class="row">
 
-  } catch (error) {
+          <span>
+            Tuition
+          </span>
 
-    alert(
-      "Could not load Admin Dashboard:\n\n" +
-      error.message
-    );
-  }
-}
+          <strong>
+            L$${tuition}
+          </strong>
 
+        </div>
 
-/* =========================
-   APPROVE SCHOOL
-========================= */
+        <div class="row">
 
-async function approveSchool(schoolId) {
+          <span>
+            This Payment
+          </span>
 
-  const confirmed = confirm(
-    "Are you sure you want to approve this school?\n\n" +
-    "The school will become ACTIVE and its " +
-    "6-month subscription will start."
-  );
+          <strong>
+            L$${amount}
+          </strong>
 
-  if (!confirmed) {
-    return;
-  }
+        </div>
 
-  try {
+        <div class="row">
 
-    await supabase(
-      "/rest/v1/rpc/approve_school",
-      {
-        method: "POST",
+          <span>
+            Payment Method
+          </span>
 
-        body: JSON.stringify({
-          p_school_id: schoolId
-        })
-      }
-    );
+          <strong>
+            ${method}
+          </strong>
 
-    alert(
-      "School approved successfully! ✅\n\n" +
-      "The school is now active and its " +
-      "6-month subscription has started."
-    );
+        </div>
 
-    showAdminDashboard();
+        <div class="row">
 
-  } catch (error) {
+          <span>
+            Total Paid
+          </span>
 
-    alert(
-      "Could not approve school:\n\n" +
-      error.message
-    );
-  }
-}
+          <strong>
+            L$${totalPaid}
+          </strong>
 
+        </div>
 
-/* =========================
-   REJECT SCHOOL
-========================= */
-
-async function rejectSchool(schoolId) {
-
-  const confirmed = confirm(
-    "Are you sure you want to reject this school registration?"
-  );
-
-  if (!confirmed) {
-    return;
-  }
-
-  try {
-
-    await supabase(
-      "/rest/v1/rpc/reject_school",
-      {
-        method: "POST",
-
-        body: JSON.stringify({
-          p_school_id: schoolId
-        })
-      }
-    );
-
-    alert(
-      "School registration rejected. ❌"
-    );
-
-    showAdminDashboard();
-
-  } catch (error) {
-
-    alert(
-      "Could not reject school:\n\n" +
-      error.message
-    );
-  }
-}
-
-
-/* =========================
-   LOGOUT
-========================= */
-
-function logout() {
-
-  accessToken = "";
-
-  localStorage.removeItem(
-    "schoolpay_token"
-  );
-
-  showLogin();
-}
-
-
-/* =========================
-   START APP
-========================= */
-
-showLogin();
-
-</script>
-
-</body>
-</html>
+ 
