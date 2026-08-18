@@ -74,22 +74,6 @@
       background: #168a45;
     }
 
-    button.danger-btn {
-      background: #c62828;
-    }
-
-    button.warning-btn {
-      background: #f59e0b;
-      color: #172033;
-    }
-
-    button.small-btn {
-      width: auto;
-      padding: 10px 14px;
-      margin-right: 6px;
-      font-size: 14px;
-    }
-
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -116,23 +100,8 @@
     }
 
     .school {
-      padding: 16px;
-      border: 1px solid #eee;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      background: #fafcff;
-    }
-
-    .school-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      margin-top: 12px;
-    }
-
-    .school-actions button {
-      flex: 1;
-      min-width: 120px;
+      padding: 12px;
+      border-bottom: 1px solid #eee;
     }
 
     .error {
@@ -176,63 +145,6 @@
       margin-top: 15px;
     }
 
-    .badge {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    .badge-pending {
-      background: #fff3cd;
-      color: #856404;
-    }
-
-    .badge-approved,
-    .badge-active {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .badge-rejected,
-    .badge-expired {
-      background: #f8d7da;
-      color: #721c24;
-    }
-
-    .badge-suspended {
-      background: #e2e3e5;
-      color: #383d41;
-    }
-
-    .renewal {
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-      background: #fff;
-    }
-
-    .renewal-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      margin-top: 12px;
-    }
-
-    .renewal-actions button {
-      flex: 1;
-      min-width: 120px;
-    }
-
-    .empty {
-      padding: 15px;
-      background: #f7f7f7;
-      border-radius: 10px;
-      color: #555;
-    }
-
     @media print {
       body {
         background: white;
@@ -256,17 +168,6 @@
 
       .receipt {
         border: 2px solid #000;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .receipt-row {
-        flex-direction: column;
-        gap: 3px;
       }
     }
   </style>
@@ -313,14 +214,13 @@ async function supabase(path, options = {}) {
       "Bearer " + accessToken;
   }
 
-  const response =
-    await fetch(
-      SUPABASE_URL + path,
-      {
-        ...options,
-        headers
-      }
-    );
+  const response = await fetch(
+    SUPABASE_URL + path,
+    {
+      ...options,
+      headers
+    }
+  );
 
   const text =
     await response.text();
@@ -431,14 +331,10 @@ async function schoolLogin() {
 
           body: JSON.stringify({
             email:
-              document.getElementById(
-                "loginEmail"
-              ).value,
+              document.getElementById("loginEmail").value,
 
             password:
-              document.getElementById(
-                "loginPassword"
-              ).value
+              document.getElementById("loginPassword").value
           })
         }
       );
@@ -530,14 +426,10 @@ async function registerSchool() {
           body: JSON.stringify({
 
             email:
-              document.getElementById(
-                "schoolEmail"
-              ).value,
+              document.getElementById("schoolEmail").value,
 
             password:
-              document.getElementById(
-                "schoolPassword"
-              ).value
+              document.getElementById("schoolPassword").value
           })
         }
       );
@@ -561,24 +453,16 @@ async function registerSchool() {
         body: JSON.stringify({
 
           p_name:
-            document.getElementById(
-              "schoolName"
-            ).value,
+            document.getElementById("schoolName").value,
 
           p_contact_name:
-            document.getElementById(
-              "contactName"
-            ).value,
+            document.getElementById("contactName").value,
 
           p_contact_phone:
-            document.getElementById(
-              "schoolPhone"
-            ).value,
+            document.getElementById("schoolPhone").value,
 
           p_contact_email:
-            document.getElementById(
-              "schoolEmail"
-            ).value,
+            document.getElementById("schoolEmail").value,
 
           p_logo_url: null
         })
@@ -637,10 +521,6 @@ async function showSchoolDashboard() {
 
       <button onclick="showPayments()">
         💰 Tuition / Payments
-      </button>
-
-      <button onclick="showPaymentHistory()">
-        📋 Payment History
       </button>
 
       <button onclick="showRenewal()">
@@ -974,27 +854,27 @@ async function showPayments() {
 
       <select id="paymentMethod">
 
-        <option value="">
-          Select Payment Method
-        </option>
+  <option value="">
+    Select Payment Method
+  </option>
 
-        <option value="cash">
-          Cash
-        </option>
+  <option value="cash">
+    Cash
+  </option>
 
-        <option value="mobile_money">
-          Mobile Money
-        </option>
+  <option value="mobile_money">
+    Mobile Money
+  </option>
 
-        <option value="bank">
-          Bank Transfer
-        </option>
+  <option value="bank">
+    Bank Transfer
+  </option>
 
-        <option value="other">
-          Other
-        </option>
+  <option value="other">
+    Other
+  </option>
 
-      </select>
+</select>
 
       <input
         id="paymentReference"
@@ -1142,10 +1022,7 @@ async function findStudentForPayment() {
       </div>
     `;
   }
-}
-
-
-/* =========================
+}  /* =========================
    RECORD PAYMENT
 ========================= */
 
@@ -1207,8 +1084,401 @@ async function recordPayment() {
 
     if (!amount || amount <= 0) {
       throw new Error(
-        "Please 
-        /* =========================
+        "Please enter a valid payment amount."
+      );
+    }
+
+    if (!method) {
+      throw new Error(
+        "Please select a payment method."
+      );
+    }
+
+    const school =
+      await getMySchool();
+
+    /*
+      Generate a unique receipt number.
+    */
+
+    const receiptNumber =
+      generateReceiptNumber();
+
+    /*
+      Save the payment in Supabase.
+    */
+
+    const payment =
+      await supabase(
+        "/rest/v1/payments",
+        {
+          method: "POST",
+
+          headers: {
+            "Prefer":
+              "return=representation"
+          },
+
+          body: JSON.stringify({
+
+            school_id:
+              school.id,
+
+            student_id:
+              selectedStudent.id,
+
+            amount:
+              amount,
+
+            payment_method:
+              method,
+
+            receipt_number:
+              receiptNumber,
+
+            paid_at:
+              new Date().toISOString(),
+
+            entered_by:
+              null,
+
+            notes:
+              notes ||
+              reference ||
+              null
+          })
+        }
+      );
+
+    /*
+      Show the receipt using
+      the saved payment.
+    */
+
+    const savedPayment =
+      Array.isArray(payment)
+        ? payment[0]
+        : payment;
+
+    await showReceipt(
+      school,
+      selectedStudent,
+      savedPayment,
+      reference
+    );
+
+  } catch (error) {
+
+    alert(
+      "Could not record payment:\n\n" +
+      error.message
+    );
+  }
+}
+
+
+/* =========================
+   RECEIPT NUMBER
+========================= */
+
+function generateReceiptNumber() {
+
+  const now =
+    new Date();
+
+  const year =
+    now.getFullYear();
+
+  const month =
+    String(
+      now.getMonth() + 1
+    ).padStart(2, "0");
+
+  const day =
+    String(
+      now.getDate()
+    ).padStart(2, "0");
+
+  const random =
+    Math.floor(
+      100000 +
+      Math.random() * 900000
+    );
+
+  return (
+    "SPL-" +
+    year +
+    month +
+    day +
+    "-" +
+    random
+  );
+}
+
+
+/* =========================
+   SHOW RECEIPT
+========================= */
+
+async function showReceipt(
+  school,
+  student,
+  payment,
+  transactionReference
+) {
+
+  /*
+    Calculate total paid and balance.
+  */
+
+  let totalPaid = 0;
+
+  try {
+
+    const payments =
+      await supabase(
+        "/rest/v1/payments?select=amount&student_id=eq." +
+        encodeURIComponent(
+          student.id
+        )
+      );
+
+    totalPaid =
+      payments.reduce(
+        (sum, item) =>
+          sum +
+          Number(item.amount || 0),
+        0
+      );
+
+  } catch {
+
+    totalPaid =
+      Number(payment.amount || 0);
+  }
+
+  const tuition =
+    Number(
+      student.tuition_amount || 0
+    );
+
+  const balance =
+    Math.max(
+      tuition - totalPaid,
+      0
+    );
+
+  const paymentDate =
+    new Date(
+      payment.paid_at
+    );
+
+  app.innerHTML = `
+
+    <div class="card receipt-card">
+
+      <div class="receipt">
+
+        <div class="receipt-header">
+
+          <h2>
+            ${escapeHtml(
+              school.name
+            )}
+          </h2>
+
+          <p>
+            OFFICIAL PAYMENT RECEIPT
+          </p>
+
+          <strong>
+            Receipt No:
+            ${escapeHtml(
+              payment.receipt_number
+            )}
+          </strong>
+
+        </div>
+
+
+        <div class="receipt-row">
+
+          <span>
+            Student Name
+          </span>
+
+          <strong>
+            ${escapeHtml(
+              student.full_name
+            )}
+          </strong>
+
+        </div>
+
+
+        <div class="receipt-row">
+
+          <span>
+            Student ID
+          </span>
+
+          <strong>
+            ${escapeHtml(
+              student.student_id
+            )}
+          </strong>
+
+        </div>
+
+
+        <div class="receipt-row">
+
+          <span>
+            Class
+          </span>
+
+          <strong>
+            ${escapeHtml(
+              student.class_name || ""
+            )}
+          </strong>
+
+        </div>
+
+
+        <div class="receipt-row">
+
+          <span>
+            Tuition
+          </span>
+
+          <strong>
+            L${tuition.toLocaleString()}
+          </strong>
+
+        </div>
+
+
+        <div class="receipt-row">
+
+          <span>
+            Amount Paid
+          </span>
+
+          <strong>
+            L${Number(
+              payment.amount
+            ).toLocaleString()}
+          </strong>
+
+        </div>
+
+
+        <div class="receipt-row">
+
+          <span>
+            Total Paid
+          </span>
+
+          <strong>
+            L${totalPaid.toLocaleString()}
+          </strong>
+
+        </div>
+
+
+        <div class="receipt-row">
+
+          <span>
+            Remaining Balance
+          </span>
+
+          <strong>
+            L${balance.toLocaleString()}
+          </strong>
+
+        </div>
+
+
+        <div class="receipt-row">
+
+          <span>
+            Payment Method
+          </span>
+
+          <strong>
+            ${escapeHtml(
+              payment.payment_method
+            )}
+          </strong>
+
+        </div>
+
+
+        <div class="receipt-row">
+
+          <span>
+            Transaction Reference
+          </span>
+
+          <strong>
+            ${escapeHtml(
+              transactionReference ||
+              payment.notes ||
+              "N/A"
+            )}
+          </strong>
+
+        </div>
+
+
+        <div class="receipt-row">
+
+          <span>
+            Date
+          </span>
+
+          <strong>
+            ${paymentDate.toLocaleString()}
+          </strong>
+
+        </div>
+
+
+        <div class="receipt-total">
+
+          Thank you for your payment.
+
+        </div>
+
+      </div>
+
+
+      <br>
+
+      <button
+        class="print-hide"
+        onclick="window.print()">
+
+        🖨️ Print Receipt
+
+      </button>
+
+
+      <button
+        class="secondary print-hide"
+        onclick="showSchoolDashboard()">
+
+        Back to Dashboard
+
+      </button>
+
+    </div>
+  `;
+}
+
+
+/* =========================
    PAYMENT HISTORY
 ========================= */
 
@@ -1227,7 +1497,9 @@ async function showPaymentHistory() {
       <button
         class="secondary"
         onclick="showSchoolDashboard()">
+
         Back
+
       </button>
 
     </div>
@@ -1344,7 +1616,9 @@ function showRenewal() {
       <button
         class="secondary"
         onclick="showSchoolDashboard()">
+
         Back
+
       </button>
 
     </div>
@@ -1356,30 +1630,6 @@ async function submitRenewal() {
 
   try {
 
-    const amount =
-      Number(
-        document.getElementById(
-          "renewAmount"
-        ).value
-      );
-
-    const reference =
-      document.getElementById(
-        "renewReference"
-      ).value.trim();
-
-    if (!amount || amount <= 0) {
-      throw new Error(
-        "Please enter a valid renewal amount."
-      );
-    }
-
-    if (!reference) {
-      throw new Error(
-        "Please enter the transaction reference."
-      );
-    }
-
     await supabase(
       "/rest/v1/rpc/submit_subscription_renewal",
       {
@@ -1388,10 +1638,14 @@ async function submitRenewal() {
         body: JSON.stringify({
 
           p_amount:
-            amount,
+            document.getElementById(
+              "renewAmount"
+            ).value,
 
           p_transaction_reference:
-            reference,
+            document.getElementById(
+              "renewReference"
+            ).value,
 
           p_notes:
             "SchoolPay renewal"
@@ -1446,7 +1700,9 @@ function showAdminLogin() {
       <button
         class="secondary"
         onclick="showLogin()">
+
         Back
+
       </button>
 
     </div>
@@ -1520,57 +1776,6 @@ async function adminLogin() {
 
 async function showAdminDashboard() {
 
-  app.innerHTML = `
-
-    <h2>👑 Owner Dashboard</h2>
-
-    <div class="card">
-
-      <h3>
-        Registered Schools
-      </h3>
-
-      <div id="adminSchools">
-        Loading schools...
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <h3>
-        📅 Subscription Renewal Requests
-      </h3>
-
-      <div id="adminRenewals">
-        Loading subscription requests...
-      </div>
-
-    </div>
-
-    <button
-      class="secondary"
-      onclick="logout()">
-      Log out
-    </button>
-  `;
-
-  await loadAdminSchools();
-  await loadAdminRenewals();
-}
-
-
-/* =========================
-   LOAD ALL SCHOOLS
-========================= */
-
-async function loadAdminSchools() {
-
-  const container =
-    document.getElementById(
-      "adminSchools"
-    );
-
   try {
 
     const schools =
@@ -1578,728 +1783,85 @@ async function loadAdminSchools() {
         "/rest/v1/schools?select=*&order=created_at.desc"
       );
 
+    let schoolList = "";
+
     if (!schools.length) {
 
-      container.innerHTML = `
-        <div class="empty">
-          No schools registered yet.
-        </div>
-      `;
+      schoolList =
+        "<p>No schools registered yet.</p>";
 
-      return;
-    }
+    } else {
 
-    container.innerHTML =
-      schools.map(
-        school => {
+      schools.forEach(
+        function(school) {
 
-          const status =
-            school.status ||
-            "pending";
-
-          const expires =
-            school.subscription_expires_at
-              ? new Date(
-                  school.subscription_expires_at
-                ).toLocaleDateString()
-              : "Not set";
-
-          return `
+          schoolList += `
 
             <div class="school">
 
-              <h3>
+              <b>
                 ${escapeHtml(
                   school.name ||
-                  "Unnamed School"
+                  "School"
                 )}
-              </h3>
+              </b>
 
-              <p>
-                <strong>Contact:</strong>
-                ${escapeHtml(
-                  school.contact_name ||
-                  "N/A"
-                )}
-              </p>
+              <br>
 
-              <p>
-                <strong>Phone:</strong>
-                ${escapeHtml(
-                  school.contact_phone ||
-                  "N/A"
-                )}
-              </p>
-
-              <p>
-                <strong>Email:</strong>
-                ${escapeHtml(
-                  school.contact_email ||
-                  "N/A"
-                )}
-              </p>
-
-              <p>
-                <strong>Status:</strong>
-                ${statusBadge(status)}
-              </p>
-
-              <p>
-                <strong>Subscription expires:</strong>
-                ${escapeHtml(expires)}
-              </p>
-
-              <div class="school-actions">
-
-                <button
-                  class="danger-btn"
-                  onclick="deleteSchool(
-                    '${school.id}',
-                    '${escapeJs(school.name || "this school")}'
-                  )">
-
-                  🗑️ Remove School
-
-                </button>
-
-              </div>
+              Status:
+              ${escapeHtml(
+                school.status ||
+                "Pending"
+              )}
 
             </div>
           `;
         }
-      ).join("");
+      );
+    }
 
-  } catch (error) {
+    app.innerHTML = `
 
-    container.innerHTML = `
+      <h2>👑 Owner Dashboard</h2>
 
-      <p class="error">
+      <div class="card">
 
-        Could not load schools:
-        ${escapeHtml(
-          error.message
-        )}
+        <h3>
+          Registered Schools
+        </h3>
 
-      </p>
+        ${schoolList}
+
+      </div>
+
+      <div class="card">
+
+        <h3>
+          Subscriptions
+        </h3>
+
+        <p>
+          Review school subscriptions
+          and renewal requests.
+        </p>
+
+      </div>
+
+      <button
+        class="secondary"
+        onclick="logout()">
+
+        Log out
+
+      </button>
     `;
-  }
-}
-
-
-/* =========================
-   LOAD SUBSCRIPTION REQUESTS
-========================= */
-
-async function loadAdminRenewals() {
-
-  const container =
-    document.getElementById(
-      "adminRenewals"
-    );
-
-  try {
-
-    const renewals =
-      await supabase(
-        "/rest/v1/subscription_renewals?select=*,schools(name,contact_name,contact_phone,contact_email)&order=submitted_at.desc"
-      );
-
-    if (!renewals.length) {
-
-      container.innerHTML = `
-        <div class="empty">
-          No subscription renewal requests yet.
-        </div>
-      `;
-
-      return;
-    }
-
-    container.innerHTML =
-      renewals.map(
-        renewal => {
-
-          const school =
-            renewal.schools || {};
-
-          const status =
-            renewal.status ||
-            "pending";
-
-          const submitted =
-            renewal.submitted_at
-              ? new Date(
-                  renewal.submitted_at
-                ).toLocaleString()
-              : "N/A";
-
-          const reviewed =
-            renewal.reviewed_at
-              ? new Date(
-                  renewal.reviewed_at
-                ).toLocaleString()
-              : "";
-
-          return `
-
-            <div class="renewal">
-
-              <h3>
-                ${escapeHtml(
-                  school.name ||
-                  "Unknown School"
-                )}
-              </h3>
-
-              <p>
-                <strong>
-                  Amount:
-                </strong>
-
-                L${Number(
-                  renewal.amount || 0
-                ).toLocaleString()}
-              </p>
-
-              <p>
-                <strong>
-                  Transaction Reference:
-                </strong>
-
-                ${escapeHtml(
-                  renewal.transaction_reference ||
-                  "N/A"
-                )}
-              </p>
-
-              <p>
-                <strong>
-                  Submitted:
-                </strong>
-
-                ${escapeHtml(
-                  submitted
-                )}
-              </p>
-
-              <p>
-                <strong>
-                  Status:
-                </strong>
-
-                ${statusBadge(status)}
-              </p>
-
-              ${
-                reviewed
-                  ? `
-                    <p>
-                      <strong>
-                        Reviewed:
-                      </strong>
-
-                      ${escapeHtml(
-                        reviewed
-                      )}
-                    </p>
-                  `
-                  : ""
-              }
-
-              ${
-                status === "pending"
-                  ? `
-
-                    <div class="renewal-actions">
-
-                      <button
-                        class="success-btn"
-                        onclick="approveRenewal(
-                          '${renewal.id}',
-                          '${renewal.school_id}'
-                        )">
-
-                        ✓ Approve
-
-                      </button>
-
-                      <button
-                        class="danger-btn"
-                        onclick="rejectRenewal(
-                          '${renewal.id}'
-                        )">
-
-                        ✕ Reject
-
-                      </button>
-
-                    </div>
-
-                  `
-                  : ""
-              }
-
-            </div>
-          `;
-        }
-      ).join("");
-
-  } catch (error) {
-
-    container.innerHTML = `
-
-      <p class="error">
-
-        Could not load subscription requests:
-
-        ${escapeHtml(
-          error.message
-        )}
-
-      </p>
-    `;
-  }
-}
-
-
-/* =========================
-   STATUS BADGE
-========================= */
-
-function statusBadge(status) {
-
-  const value =
-    String(
-      status ||
-      "pending"
-    ).toLowerCase();
-
-  let className =
-    "badge-pending";
-
-  if (
-    value === "approved" ||
-    value === "active"
-  ) {
-    className =
-      "badge-approved";
-  }
-
-  if (
-    value === "rejected" ||
-    value === "expired"
-  ) {
-    className =
-      "badge-rejected";
-  }
-
-  if (
-    value === "suspended"
-  ) {
-    className =
-      "badge-suspended";
-  }
-
-  return `
-    <span class="badge ${className}">
-      ${escapeHtml(
-        value.toUpperCase()
-      )}
-    </span>
-  `;
-}
-
-
-/* =========================
-   APPROVE RENEWAL
-========================= */
-
-async function approveRenewal(
-  renewalId,
-  schoolId
-) {
-
-  const confirmed =
-    confirm(
-      "Approve this subscription renewal?\n\n" +
-      "The school will receive another 6 months of access."
-    );
-
-  if (!confirmed) {
-    return;
-  }
-
-  try {
-
-    /*
-      Get the renewal first.
-    */
-
-    const renewals =
-      await supabase(
-        "/rest/v1/subscription_renewals?id=eq." +
-        encodeURIComponent(
-          renewalId
-        ) +
-        "&select=*"
-      );
-
-    if (!renewals.length) {
-
-      throw new Error(
-        "Renewal request was not found."
-      );
-    }
-
-    const renewal =
-      renewals[0];
-
-    if (
-      renewal.status !==
-      "pending"
-    ) {
-
-      throw new Error(
-        "This renewal has already been reviewed."
-      );
-    }
-
-    /*
-      Mark renewal as approved.
-    */
-
-    await supabase(
-      "/rest/v1/subscription_renewals?id=eq." +
-      encodeURIComponent(
-        renewalId
-      ),
-      {
-        method: "PATCH",
-
-        headers: {
-          "Prefer":
-            "return=minimal"
-        },
-
-        body: JSON.stringify({
-
-          status:
-            "approved",
-
-          reviewed_by:
-            null,
-
-          reviewed_at:
-            new Date().toISOString(),
-
-          notes:
-            "Approved by SchoolPay owner"
-        })
-      }
-    );
-
-    /*
-      Get current school subscription.
-    */
-
-    const schools =
-      await supabase(
-        "/rest/v1/schools?id=eq." +
-        encodeURIComponent(
-          schoolId
-        ) +
-        "&select=id,subscription_expires_at,status"
-      );
-
-    if (!schools.length) {
-
-      throw new Error(
-        "School was not found."
-      );
-    }
-
-    const school =
-      schools[0];
-
-    /*
-      Give the school 6 months.
-
-      If the current subscription
-      is still active, extend from
-      the existing expiry date.
-
-      Otherwise start from today.
-    */
-
-    const now =
-      new Date();
-
-    let startDate =
-      now;
-
-    if (
-      school.subscription_expires_at
-    ) {
-
-      const existingExpiry =
-        new Date(
-          school.subscription_expires_at
-        );
-
-      if (
-        existingExpiry > now
-      ) {
-        startDate =
-          existingExpiry;
-      }
-    }
-
-    const newExpiry =
-      new Date(
-        startDate
-      );
-
-    newExpiry.setMonth(
-      newExpiry.getMonth() + 6
-    );
-
-    /*
-      Activate the school.
-    */
-
-    await supabase(
-      "/rest/v1/schools?id=eq." +
-      encodeURIComponent(
-        schoolId
-      ),
-      {
-        method: "PATCH",
-
-        headers: {
-          "Prefer":
-            "return=minimal"
-        },
-
-        body: JSON.stringify({
-
-          status:
-            "active",
-
-          subscription_started_at:
-            startDate.toISOString(),
-
-          subscription_expires_at:
-            newExpiry.toISOString(),
-
-          updated_at:
-            new Date().toISOString()
-        })
-      }
-    );
-
-    alert(
-      "Subscription approved successfully.\n\n" +
-      "New expiry date: " +
-      newExpiry.toLocaleDateString()
-    );
-
-    await showAdminDashboard();
 
   } catch (error) {
 
     alert(
-      "Could not approve renewal:\n\n" +
+      "Could not load Admin Dashboard:\n\n" +
       error.message
     );
-
-    await showAdminDashboard();
-  }
-}
-
-
-/* =========================
-   REJECT RENEWAL
-========================= */
-
-async function rejectRenewal(
-  renewalId
-) {
-
-  const reason =
-    prompt(
-      "Why are you rejecting this renewal?\n\n" +
-      "You can leave it blank."
-    );
-
-  if (
-    reason === null
-  ) {
-    return;
-  }
-
-  try {
-
-    const renewals =
-      await supabase(
-        "/rest/v1/subscription_renewals?id=eq." +
-        encodeURIComponent(
-          renewalId
-        ) +
-        "&select=id,status"
-      );
-
-    if (!renewals.length) {
-
-      throw new Error(
-        "Renewal request was not found."
-      );
-    }
-
-    if (
-      renewals[0].status !==
-      "pending"
-    ) {
-
-      throw new Error(
-        "This renewal has already been reviewed."
-      );
-    }
-
-    await supabase(
-      "/rest/v1/subscription_renewals?id=eq." +
-      encodeURIComponent(
-        renewalId
-      ),
-      {
-        method: "PATCH",
-
-        headers: {
-          "Prefer":
-            "return=minimal"
-        },
-
-        body: JSON.stringify({
-
-          status:
-            "rejected",
-
-          reviewed_by:
-            null,
-
-          reviewed_at:
-            new Date().toISOString(),
-
-          notes:
-            reason.trim() ||
-            "Renewal rejected by SchoolPay owner"
-        })
-      }
-    );
-
-    alert(
-      "Subscription renewal rejected."
-    );
-
-    await showAdminDashboard();
-
-  } catch (error) {
-
-    alert(
-      "Could not reject renewal:\n\n" +
-      error.message
-    );
-
-    await showAdminDashboard();
-  }
-}
-
-
-/* =========================
-   DELETE SCHOOL
-========================= */
-
-async function deleteSchool(
-  schoolId,
-  schoolName
-) {
-
-  const confirmed =
-    confirm(
-      "⚠️ REMOVE SCHOOL\n\n" +
-      "Are you sure you want to permanently remove:\n\n" +
-      schoolName +
-      "\n\n" +
-      "This will also remove the school's students, payments and subscription renewal records.\n\n" +
-      "This action cannot be undone."
-    );
-
-  if (!confirmed) {
-    return;
-  }
-
-  /*
-    Second confirmation prevents
-    accidental deletion.
-  */
-
-  const finalConfirmation =
-    prompt(
-      "Type DELETE to permanently remove this school:"
-    );
-
-  if (
-    finalConfirmation !==
-    "DELETE"
-  ) {
-
-    alert(
-      "School was NOT removed."
-    );
-
-    return;
-  }
-
-  try {
-
-    /*
-      The schools table has CASCADE
-      relationships for students,
-      payments and subscription
-      renewals, so deleting the
-      school removes those records
-      automatically.
-    */
-
-    await supabase(
-      "/rest/v1/schools?id=eq." +
-      encodeURIComponent(
-        schoolId
-      ),
-      {
-        method: "DELETE",
-
-        headers: {
-          "Prefer":
-            "return=minimal"
-        }
-      }
-    );
-
-    alert(
-      schoolName +
-      " has been removed successfully."
-    );
-
-    await showAdminDashboard();
-
-  } catch (error) {
-
-    alert(
-      "Could not remove school:\n\n" +
-      error.message
-    );
-
-    await showAdminDashboard();
   }
 }
 
@@ -2310,62 +1872,18 @@ async function deleteSchool(
 
 function escapeHtml(value) {
 
-  if (
-    value === null ||
-    value === undefined
-  ) {
+  if (value === null ||
+      value === undefined) {
+
     return "";
   }
 
   return String(value)
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-    .replaceAll(
-      "'",
-      "&#039;"
-    );
-}
-
-
-/* =========================
-   ESCAPE JAVASCRIPT
-========================= */
-
-function escapeJs(value) {
-
-  return String(
-    value || ""
-  )
-    .replaceAll(
-      "\\",
-      "\\\\"
-    )
-    .replaceAll(
-      "'",
-      "\\'"
-    )
-    .replaceAll(
-      "\n",
-      "\\n"
-    )
-    .replaceAll(
-      "\r",
-      "\\r"
-    );
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 
