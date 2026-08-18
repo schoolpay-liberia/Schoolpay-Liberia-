@@ -1771,7 +1771,7 @@ async function adminLogin() {
 }
 
 
-/* =========================
+/* ===/* =========================
    OWNER DASHBOARD
 ========================= */
 
@@ -1779,82 +1779,185 @@ async function showAdminDashboard() {
 
   try {
 
-    const schools =
-      await supabase(
-        "/rest/v1/schools?select=*&order=created_at.desc"
-      );
+    const schools = await supabase(
+      "/rest/v1/schools?select=*&order=created_at.desc"
+    );
 
     let schoolList = "";
 
-    if (!schools.length) {
+    if (!schools || schools.length === 0) {
 
       schoolList =
         "<p>No schools registered yet.</p>";
 
     } else {
 
-      schools.forEach(
-        function(school) {
+      schools.forEach(function(school) {
 
-          schoolList += `
+        schoolList += `
+
+          <div class="school">
+
+            <b>
+              ${school.name || "School"}
+            </b>
+
+            <br><br>
+
+            Status:
+            <b>${school.status || "Pending"}</b>
+
+            <br><br>
+
+            <button
+              onclick="removeSchool('${school.id}', '${String(school.name || "School").replace(/'/g, "\\'")}')"
+              style="background:#dc3545;">
+              🗑️ Remove School
+            </button>
+
+          </div>
+
+        `;
+      });
+    }
+
+
+    /* =========================
+       LOAD SUBSCRIPTIONS
+    ========================= */
+
+    let renewalList = "";
+
+    try {
+
+      const renewals = await supabase(
+        "/rest/v1/rpc/owner_list_subscription_renewals",
+        {
+          method: "POST"
+        }
+      );
+
+      if (!renewals || renewals.length === 0) {
+
+        renewalList =
+          "<p>No subscription requests found.</p>";
+
+      } else {
+
+        renewals.forEach(function(renewal) {
+
+          renewalList += `
 
             <div class="school">
 
-              <b>
-                ${escapeHtml(
-                  school.name ||
-                  "School"
-                )}
-              </b>
+              <h4>
+                🏫 ${renewal.school_name || "School"}
+              </h4>
 
-              <br>
+              <p>
+                <b>Amount:</b>
+                L$${renewal.amount || 0}
+              </p>
 
-              Status:
-              ${escapeHtml(
-                school.status ||
-                "Pending"
-              )}
+              <p>
+                <b>Transaction Reference:</b>
+                ${renewal.transaction_reference || "None"}
+              </p>
+
+              <p>
+                <b>Status:</b>
+                ${renewal.status || "Pending"}
+              </p>
+
+              <p>
+                <b>Submitted:</b>
+                ${renewal.submitted_at
+                  ? new Date(renewal.submitted_at).toLocaleString()
+                  : "Unknown"}
+              </p>
+
+              ${
+                String(renewal.status).toLowerCase() === "pending"
+                ? `
+
+                  <button
+                    onclick="approveRenewal('${renewal.id}')"
+                    style="background:#198754;">
+                    ✅ Approve
+                  </button>
+
+                  <button
+                    onclick="rejectRenewal('${renewal.id}')"
+                    style="background:#dc3545;">
+                    ❌ Reject
+                  </button>
+
+                `
+                : ""
+              }
 
             </div>
+
           `;
-        }
-      );
+        });
+      }
+
+    } catch (renewalError) {
+
+      renewalList = `
+        <p style="color:#b00020;">
+          Could not load subscription requests:
+          ${renewalError.message}
+        </p>
+      `;
     }
+
+
+    /* =========================
+       OWNER DASHBOARD HTML
+    ========================= */
 
     app.innerHTML = `
 
       <h2>👑 Owner Dashboard</h2>
 
+
       <div class="card">
 
-        <h3>
-          Registered Schools
-        </h3>
+        <h3>🏫 Registered Schools</h3>
 
         ${schoolList}
 
       </div>
 
+
       <div class="card">
 
-        <h3>
-          Subscriptions
-        </h3>
+        <h3>📅 Subscription Requests</h3>
 
         <p>
-          Review school subscriptions
-          and renewal requests.
+          Review school subscription payments
+          and approve or reject them.
         </p>
 
+        ${renewalList}
+
       </div>
+
+
+      <button
+        class="secondary"
+        onclick="showAdminDashboard()">
+        🔄 Refresh Dashboard
+      </button>
+
 
       <button
         class="secondary"
         onclick="logout()">
-
         Log out
-
       </button>
+
     `;
 
   } catch (error) {
@@ -1863,36 +1966,145 @@ async function showAdminDashboard() {
       "Could not load Admin Dashboard:\n\n" +
       error.message
     );
+
   }
 }
 
 
 /* =========================
-   ESCAPE HTML
+   APPROVE SUBSCRIPTION
 ========================= */
 
-function escapeHtml(value) {
+async function approveRenewal(renewalId) {
 
-  if (value === null ||
-      value === undefined) {
-
-    return "";
+  if (!confirm(
+    "Are you sure you want to approve this subscription?"
+  )) {
+    return;
   }
 
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+  try {
+
+    await supabase(
+      "/rest/v1/rpc/approve_subscription_renewal",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          p_renewal_id: renewalId
+        })
+      }
+    );
+
+    alert(
+      "Subscription approved successfully."
+    );
+
+    showAdminDashboard();
+
+  } catch (error) {
+
+    alert(
+      "Could not approve subscription:\n\n" +
+      error.message
+    );
+
+  }
 }
 
 
 /* =========================
-   LOGOUT
+   REJECT SUBSCRIPTION
 ========================= */
 
-function logout() {
+async function rejectRenewal(renewalId) {
+
+  if (!confirm(
+    "Are you sure you want to reject this subscription?"
+  )) {
+    return;
+  }
+
+  try {
+
+    await supabase(
+      "/rest/v1/rpc/reject_subscription_renewal",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          p_renewal_id: renewalId
+        })
+      }
+    );
+
+    alert(
+      "Subscription rejected."
+    );
+
+    showAdminDashboard();
+
+  } catch (error) {
+
+    alert(
+      "Could not reject subscription:\n\n" +
+      error.message
+    );
+
+  }
+}
+
+
+/* =========================
+   REMOVE SCHOOL
+========================= */
+
+async function removeSchool(
+  schoolId,
+  schoolName
+) {
+
+  if (!confirm(
+    "WARNING!\n\n" +
+    "You are about to remove:\n\n" +
+    schoolName +
+    "\n\n" +
+    "This will remove the school's " +
+    "students, payments and subscription records.\n\n" +
+    "Continue?"
+  )) {
+    return;
+  }
+
+  try {
+
+    await supabase(
+      "/rest/v1/rpc/owner_delete_school",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          p_school_id: schoolId
+        })
+      }
+    );
+
+    alert(
+      schoolName +
+      " has been removed successfully."
+    );
+
+    showAdminDashboard();
+
+  } catch (error) {
+
+    alert(
+      "Could not remove school:\n\n" +
+      error.message
+    );
+
+  }
+}      unction ction logout() {
 
   accessToken = "";
 
