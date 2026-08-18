@@ -6,9 +6,7 @@
   <title>SchoolPay Liberia</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -23,12 +21,10 @@
       padding: 22px;
     }
 
-    header h1 {
-      margin: 0 0 6px;
-    }
+    header h1 { margin: 0 0 6px; }
 
     main {
-      max-width: 760px;
+      max-width: 800px;
       margin: auto;
       padding: 20px;
     }
@@ -67,6 +63,16 @@
       color: #0b5cff;
     }
 
+    button.danger {
+      background: #d93025;
+      color: white;
+    }
+
+    button.successBtn {
+      background: #16803c;
+      color: white;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -92,14 +98,43 @@
       margin-bottom: 12px;
     }
 
+    .pending {
+      background: #fff5d6;
+      padding: 13px;
+      border-radius: 9px;
+      margin: 10px 0;
+    }
+
+    .rejected {
+      background: #ffe8e8;
+      padding: 13px;
+      border-radius: 9px;
+      margin: 10px 0;
+    }
+
     .school {
-      padding: 12px;
+      padding: 18px 0;
       border-bottom: 1px solid #eee;
+    }
+
+    .school:last-child {
+      border-bottom: none;
     }
 
     .error {
       color: #b00020;
       margin-top: 10px;
+    }
+
+    .small {
+      color: #666;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -178,7 +213,7 @@ async function supabase(path, options = {}) {
 
 
 /* =========================
-   HOME / LOGIN
+   LOGIN
 ========================= */
 
 function showLogin() {
@@ -236,7 +271,7 @@ async function schoolLogin() {
         method: "POST",
 
         body: JSON.stringify({
-          email: loginEmail.value,
+          email: loginEmail.value.trim(),
           password: loginPassword.value
         })
       }
@@ -272,6 +307,10 @@ function showRegistration() {
     <div class="card">
 
       <h2>Register Your School</h2>
+
+      <p class="small">
+        Submit your school information for owner approval.
+      </p>
 
       <input
         id="schoolName"
@@ -319,13 +358,28 @@ async function registerSchool() {
 
   try {
 
+    if (!schoolName.value.trim()) {
+      alert("Please enter the school name.");
+      return;
+    }
+
+    if (!schoolEmail.value.trim()) {
+      alert("Please enter an email.");
+      return;
+    }
+
+    if (schoolPassword.value.length < 6) {
+      alert("Password must be at least 6 characters.");
+      return;
+    }
+
     const account = await supabase(
       "/auth/v1/signup",
       {
         method: "POST",
 
         body: JSON.stringify({
-          email: schoolEmail.value,
+          email: schoolEmail.value.trim(),
           password: schoolPassword.value
         })
       }
@@ -348,17 +402,18 @@ async function registerSchool() {
         method: "POST",
 
         body: JSON.stringify({
-          p_name: schoolName.value,
-          p_contact_name: contactName.value,
-          p_contact_phone: schoolPhone.value,
-          p_contact_email: schoolEmail.value,
+          p_name: schoolName.value.trim(),
+          p_contact_name: contactName.value.trim(),
+          p_contact_phone: schoolPhone.value.trim(),
+          p_contact_email: schoolEmail.value.trim(),
           p_logo_url: null
         })
       }
     );
 
     alert(
-      "Your school registration has been submitted."
+      "Registration submitted successfully!\n\n" +
+      "Your school is now waiting for owner approval."
     );
 
     showLogin();
@@ -391,8 +446,8 @@ async function showSchoolDashboard() {
       </div>
 
       <div class="stat">
-        Payments
-        <b>L$—</b>
+        School Status
+        <b id="schoolStatus">...</b>
       </div>
 
     </div>
@@ -441,6 +496,38 @@ async function showSchoolDashboard() {
       "studentCount"
     ).textContent = "0";
   }
+
+  try {
+
+    const profiles =
+      await supabase(
+        "/rest/v1/profiles?select=school_id&limit=1"
+      );
+
+    if (profiles && profiles.length) {
+
+      const schools =
+        await supabase(
+          "/rest/v1/schools?id=eq." +
+          profiles[0].school_id +
+          "&select=status"
+        );
+
+      if (schools.length) {
+
+        document.getElementById(
+          "schoolStatus"
+        ).textContent =
+          schools[0].status;
+      }
+    }
+
+  } catch {
+
+    document.getElementById(
+      "schoolStatus"
+    ).textContent = "Active";
+  }
 }
 
 
@@ -458,7 +545,7 @@ function showStudents() {
 
       <input
         id="studentName"
-        placeholder="Student name"
+        placeholder="Student full name"
       >
 
       <input
@@ -466,20 +553,16 @@ function showStudents() {
         placeholder="Student ID"
       >
 
-      <select id="studentGrade">
+      <input
+        id="studentClass"
+        placeholder="Class / Grade"
+      >
 
-        <option value="">
-          Select Class / Grade
-        </option>
-
-        <option>Grade 7</option>
-        <option>Grade 8</option>
-        <option>Grade 9</option>
-        <option>Grade 10</option>
-        <option>Grade 11</option>
-        <option>Grade 12</option>
-
-      </select>
+      <input
+        id="tuitionAmount"
+        type="number"
+        placeholder="Tuition amount (L$)"
+      >
 
       <button onclick="addStudent()">
         Save Student
@@ -511,19 +594,25 @@ async function addStudent() {
 
         body: JSON.stringify({
 
-          student_name:
-            studentName.value,
+          full_name:
+            studentName.value.trim(),
 
           student_id:
-            studentId.value,
+            studentId.value.trim(),
 
-          grade:
-            studentGrade.value
+          class_name:
+            studentClass.value.trim(),
+
+          tuition_amount:
+            Number(tuitionAmount.value || 0)
+
         })
       }
     );
 
-    alert("Student saved successfully.");
+    alert(
+      "Student saved successfully."
+    );
 
     showSchoolDashboard();
 
@@ -551,7 +640,7 @@ function showPayments() {
 
       <input
         id="paymentStudentId"
-        placeholder="Student ID"
+        placeholder="Student UUID"
       >
 
       <input
@@ -560,9 +649,38 @@ function showPayments() {
         placeholder="Amount (L$)"
       >
 
+      <select id="paymentMethod">
+
+        <option value="">
+          Select payment method
+        </option>
+
+        <option value="cash">
+          Cash
+        </option>
+
+        <option value="mobile_money">
+          Mobile Money
+        </option>
+
+        <option value="bank">
+          Bank
+        </option>
+
+        <option value="other">
+          Other
+        </option>
+
+      </select>
+
       <input
-        id="paymentReference"
-        placeholder="Transaction reference"
+        id="receiptNumber"
+        placeholder="Receipt number"
+      >
+
+      <input
+        id="paymentNotes"
+        placeholder="Notes (optional)"
       >
 
       <button onclick="recordPayment()">
@@ -584,6 +702,21 @@ async function recordPayment() {
 
   try {
 
+    if (!paymentStudentId.value.trim()) {
+      alert("Please enter the student's UUID.");
+      return;
+    }
+
+    if (!paymentAmount.value || Number(paymentAmount.value) <= 0) {
+      alert("Please enter a valid payment amount.");
+      return;
+    }
+
+    if (!paymentMethod.value) {
+      alert("Please select a payment method.");
+      return;
+    }
+
     await supabase(
       "/rest/v1/payments",
       {
@@ -596,19 +729,30 @@ async function recordPayment() {
         body: JSON.stringify({
 
           student_id:
-            paymentStudentId.value,
+            paymentStudentId.value.trim(),
 
           amount:
-            paymentAmount.value,
+            Number(paymentAmount.value),
 
-          transaction_reference:
-            paymentReference.value
+          payment_method:
+            paymentMethod.value,
+
+          receipt_number:
+            receiptNumber.value.trim(),
+
+          notes:
+            paymentNotes.value.trim(),
+
+          entered_by:
+            null
 
         })
       }
     );
 
-    alert("Payment recorded successfully.");
+    alert(
+      "Payment recorded successfully."
+    );
 
     showSchoolDashboard();
 
@@ -677,10 +821,10 @@ async function submitRenewal() {
         body: JSON.stringify({
 
           p_amount:
-            renewAmount.value,
+            Number(renewAmount.value),
 
           p_transaction_reference:
-            renewReference.value,
+            renewReference.value.trim(),
 
           p_notes:
             "SchoolPay renewal"
@@ -706,7 +850,7 @@ async function submitRenewal() {
 
 
 /* =========================
-   OWNER / ADMIN LOGIN
+   ADMIN LOGIN
 ========================= */
 
 function showAdminLogin() {
@@ -756,7 +900,7 @@ async function adminLogin() {
         body: JSON.stringify({
 
           email:
-            adminEmail.value,
+            adminEmail.value.trim(),
 
           password:
             adminPassword.value
@@ -815,7 +959,7 @@ async function showAdminDashboard() {
 
     let schoolList = "";
 
-    if (schools.length === 0) {
+    if (!schools || schools.length === 0) {
 
       schoolList =
         "<p>No schools registered yet.</p>";
@@ -824,18 +968,127 @@ async function showAdminDashboard() {
 
       schools.forEach(function(school) {
 
+        let statusBox = "";
+
+        if (school.status === "pending") {
+
+          statusBox = `
+
+            <div class="pending">
+
+              <strong>🟡 Pending Approval</strong>
+
+              <button
+                class="successBtn"
+                onclick="approveSchool('${school.id}')">
+                ✅ Approve School
+              </button>
+
+              <button
+                class="danger"
+                onclick="rejectSchool('${school.id}')">
+                ❌ Reject School
+              </button>
+
+            </div>
+
+          `;
+
+        } else if (school.status === "active") {
+
+          statusBox = `
+
+            <div class="success">
+
+              <strong>🟢 Active School</strong>
+
+              <p>
+                Subscription expires:
+                ${
+                  school.subscription_expires_at
+                  ? new Date(
+                      school.subscription_expires_at
+                    ).toLocaleDateString()
+                  : "Not set"
+                }
+              </p>
+
+            </div>
+
+          `;
+
+        } else if (school.status === "rejected") {
+
+          statusBox = `
+
+            <div class="rejected">
+
+              <strong>
+                🔴 Registration Rejected
+              </strong>
+
+            </div>
+
+          `;
+
+        } else if (school.status === "suspended") {
+
+          statusBox = `
+
+            <div class="rejected">
+
+              <strong>
+                ⛔ School Suspended
+              </strong>
+
+            </div>
+
+          `;
+
+        } else if (school.status === "expired") {
+
+          statusBox = `
+
+            <div class="pending">
+
+              <strong>
+                ⚠️ Subscription Expired
+              </strong>
+
+            </div>
+
+          `;
+        }
+
         schoolList += `
 
           <div class="school">
 
-            <b>
+            <h3>
               ${school.name || "School"}
-            </b>
+            </h3>
 
-            <br>
+            <p>
+              <strong>Contact:</strong>
+              ${school.contact_name || "—"}
+            </p>
 
-            Status:
-            ${school.status || "Pending"}
+            <p>
+              <strong>Phone:</strong>
+              ${school.contact_phone || "—"}
+            </p>
+
+            <p>
+              <strong>Email:</strong>
+              ${school.contact_email || "—"}
+            </p>
+
+            <p>
+              <strong>Status:</strong>
+              ${school.status || "pending"}
+            </p>
+
+            ${statusBox}
 
           </div>
 
@@ -849,7 +1102,7 @@ async function showAdminDashboard() {
 
       <div class="card">
 
-        <h3>Registered Schools</h3>
+        <h3>🏫 Registered Schools</h3>
 
         ${schoolList}
 
@@ -857,11 +1110,11 @@ async function showAdminDashboard() {
 
       <div class="card">
 
-        <h3>Subscriptions</h3>
+        <h3>📅 Subscriptions</h3>
 
         <p>
-          Review school subscriptions
-          and renewal requests.
+          Approving a school automatically
+          starts its 6-month subscription.
         </p>
 
       </div>
@@ -885,28 +1138,85 @@ async function showAdminDashboard() {
 
 
 /* =========================
-   LOGOUT
+   APPROVE SCHOOL
 ========================= */
 
-function logout() {
+async function approveSchool(schoolId) {
 
-  accessToken = "";
-
-  localStorage.removeItem(
-    "schoolpay_token"
+  const confirmed = confirm(
+    "Approve this school?\n\n" +
+    "The school will become ACTIVE and " +
+    "its 6-month subscription will begin."
   );
 
-  showLogin();
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+
+    await supabase(
+      "/rest/v1/rpc/approve_school",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          p_school_id: schoolId
+        })
+      }
+    );
+
+    alert(
+      "School approved successfully! ✅\n\n" +
+      "The 6-month subscription has started."
+    );
+
+    showAdminDashboard();
+
+  } catch (error) {
+
+    alert(
+      "Could not approve school:\n\n" +
+      error.message
+    );
+  }
 }
 
 
 /* =========================
-   START APP
+   REJECT SCHOOL
 ========================= */
 
-showLogin();
+async function rejectSchool(schoolId) {
 
-</script>
+  const confirmed = confirm(
+    "Are you sure you want to reject this school registration?"
+  );
 
-</body>
-</html>
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+
+    await supabase(
+      "/rest/v1/rpc/reject_school",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          p_school_id: schoolId
+        })
+      }
+    );
+
+    alert(
+      "School registration rejected."
+    );
+
+    showAdminDashboard();
+
+  } catch (error) {
+
+    alert(
+  
