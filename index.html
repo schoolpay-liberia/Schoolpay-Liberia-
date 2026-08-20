@@ -74,6 +74,21 @@
       background: #168a45;
     }
 
+    button.danger-btn {
+      background: #c62828;
+    }
+
+    button.warning-btn {
+      background: #f59e0b;
+    }
+
+    button.small-btn {
+      width: auto;
+      padding: 10px 14px;
+      font-size: 14px;
+      margin-right: 6px;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -100,8 +115,74 @@
     }
 
     .school {
-      padding: 12px;
-      border-bottom: 1px solid #eee;
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      background: #fafcff;
+    }
+
+    .school-actions {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .school-actions button {
+      width: auto;
+      margin: 0;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 6px;
+    }
+
+    .status-pending {
+      background: #fff4d6;
+      color: #8a5a00;
+    }
+
+    .status-approved {
+      background: #e4f7eb;
+      color: #16733c;
+    }
+
+    .status-rejected {
+      background: #fde8e8;
+      color: #a61b1b;
+    }
+
+    .renewal {
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      background: #fafcff;
+    }
+
+    .review-box {
+      background: #f5f8ff;
+      padding: 16px;
+      border-radius: 12px;
+      margin-top: 12px;
+    }
+
+    .review-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 9px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .review-row:last-child {
+      border-bottom: none;
     }
 
     .error {
@@ -523,6 +604,10 @@ async function showSchoolDashboard() {
         💰 Tuition / Payments
       </button>
 
+      <button onclick="showPaymentHistory()">
+        📜 Payment History
+      </button>
+
       <button onclick="showRenewal()">
         📅 Subscription / Renewal
       </button>
@@ -854,27 +939,27 @@ async function showPayments() {
 
       <select id="paymentMethod">
 
-  <option value="">
-    Select Payment Method
-  </option>
+        <option value="">
+          Select Payment Method
+        </option>
 
-  <option value="cash">
-    Cash
-  </option>
+        <option value="cash">
+          Cash
+        </option>
 
-  <option value="mobile_money">
-    Mobile Money
-  </option>
+        <option value="mobile_money">
+          Mobile Money
+        </option>
 
-  <option value="bank">
-    Bank Transfer
-  </option>
+        <option value="bank">
+          Bank Transfer
+        </option>
 
-  <option value="other">
-    Other
-  </option>
+        <option value="other">
+          Other
+        </option>
 
-</select>
+      </select>
 
       <input
         id="paymentReference"
@@ -1022,7 +1107,10 @@ async function findStudentForPayment() {
       </div>
     `;
   }
-}  /* =========================
+}
+
+
+/* =========================
    RECORD PAYMENT
 ========================= */
 
@@ -1097,16 +1185,8 @@ async function recordPayment() {
     const school =
       await getMySchool();
 
-    /*
-      Generate a unique receipt number.
-    */
-
     const receiptNumber =
       generateReceiptNumber();
-
-    /*
-      Save the payment in Supabase.
-    */
 
     const payment =
       await supabase(
@@ -1121,364 +1201,7 @@ async function recordPayment() {
 
           body: JSON.stringify({
 
-            school_id:
-              school.id,
-
-            student_id:
-              selectedStudent.id,
-
-            amount:
-              amount,
-
-            payment_method:
-              method,
-
-            receipt_number:
-              receiptNumber,
-
-            paid_at:
-              new Date().toISOString(),
-
-            entered_by:
-              null,
-
-            notes:
-              notes ||
-              reference ||
-              null
-          })
-        }
-      );
-
-    /*
-      Show the receipt using
-      the saved payment.
-    */
-
-    const savedPayment =
-      Array.isArray(payment)
-        ? payment[0]
-        : payment;
-
-    await showReceipt(
-      school,
-      selectedStudent,
-      savedPayment,
-      reference
-    );
-
-  } catch (error) {
-
-    alert(
-      "Could not record payment:\n\n" +
-      error.message
-    );
-  }
-}
-
-
-/* =========================
-   RECEIPT NUMBER
-========================= */
-
-function generateReceiptNumber() {
-
-  const now =
-    new Date();
-
-  const year =
-    now.getFullYear();
-
-  const month =
-    String(
-      now.getMonth() + 1
-    ).padStart(2, "0");
-
-  const day =
-    String(
-      now.getDate()
-    ).padStart(2, "0");
-
-  const random =
-    Math.floor(
-      100000 +
-      Math.random() * 900000
-    );
-
-  return (
-    "SPL-" +
-    year +
-    month +
-    day +
-    "-" +
-    random
-  );
-}
-
-
-/* =========================
-   SHOW RECEIPT
-========================= */
-
-async function showReceipt(
-  school,
-  student,
-  payment,
-  transactionReference
-) {
-
-  /*
-    Calculate total paid and balance.
-  */
-
-  let totalPaid = 0;
-
-  try {
-
-    const payments =
-      await supabase(
-        "/rest/v1/payments?select=amount&student_id=eq." +
-        encodeURIComponent(
-          student.id
-        )
-      );
-
-    totalPaid =
-      payments.reduce(
-        (sum, item) =>
-          sum +
-          Number(item.amount || 0),
-        0
-      );
-
-  } catch {
-
-    totalPaid =
-      Number(payment.amount || 0);
-  }
-
-  const tuition =
-    Number(
-      student.tuition_amount || 0
-    );
-
-  const balance =
-    Math.max(
-      tuition - totalPaid,
-      0
-    );
-
-  const paymentDate =
-    new Date(
-      payment.paid_at
-    );
-
-  app.innerHTML = `
-
-    <div class="card receipt-card">
-
-      <div class="receipt">
-
-        <div class="receipt-header">
-
-          <h2>
-            ${escapeHtml(
-              school.name
-            )}
-          </h2>
-
-          <p>
-            OFFICIAL PAYMENT RECEIPT
-          </p>
-
-          <strong>
-            Receipt No:
-            ${escapeHtml(
-              payment.receipt_number
-            )}
-          </strong>
-
-        </div>
-
-
-        <div class="receipt-row">
-
-          <span>
-            Student Name
-          </span>
-
-          <strong>
-            ${escapeHtml(
-              student.full_name
-            )}
-          </strong>
-
-        </div>
-
-
-        <div class="receipt-row">
-
-          <span>
-            Student ID
-          </span>
-
-          <strong>
-            ${escapeHtml(
-              student.student_id
-            )}
-          </strong>
-
-        </div>
-
-
-        <div class="receipt-row">
-
-          <span>
-            Class
-          </span>
-
-          <strong>
-            ${escapeHtml(
-              student.class_name || ""
-            )}
-          </strong>
-
-        </div>
-
-
-        <div class="receipt-row">
-
-          <span>
-            Tuition
-          </span>
-
-          <strong>
-            L${tuition.toLocaleString()}
-          </strong>
-
-        </div>
-
-
-        <div class="receipt-row">
-
-          <span>
-            Amount Paid
-          </span>
-
-          <strong>
-            L${Number(
-              payment.amount
-            ).toLocaleString()}
-          </strong>
-
-        </div>
-
-
-        <div class="receipt-row">
-
-          <span>
-            Total Paid
-          </span>
-
-          <strong>
-            L${totalPaid.toLocaleString()}
-          </strong>
-
-        </div>
-
-
-        <div class="receipt-row">
-
-          <span>
-            Remaining Balance
-          </span>
-
-          <strong>
-            L${balance.toLocaleString()}
-          </strong>
-
-        </div>
-
-
-        <div class="receipt-row">
-
-          <span>
-            Payment Method
-          </span>
-
-          <strong>
-            ${escapeHtml(
-              payment.payment_method
-            )}
-          </strong>
-
-        </div>
-
-
-        <div class="receipt-row">
-
-          <span>
-            Transaction Reference
-          </span>
-
-          <strong>
-            ${escapeHtml(
-              transactionReference ||
-              payment.notes ||
-              "N/A"
-            )}
-          </strong>
-
-        </div>
-
-
-        <div class="receipt-row">
-
-          <span>
-            Date
-          </span>
-
-          <strong>
-            ${paymentDate.toLocaleString()}
-          </strong>
-
-        </div>
-
-
-        <div class="receipt-total">
-
-          Thank you for your payment.
-
-        </div>
-
-      </div>
-
-
-      <br>
-
-      <button
-        class="print-hide"
-        onclick="window.print()">
-
-        🖨️ Print Receipt
-
-      </button>
-
-
-      <button
-        class="secondary print-hide"
-        onclick="showSchoolDashboard()">
-
-        Back to Dashboard
-
-      </button>
-
-    </div>
-  `;
-}
-
-
-/* =========================
+     /* =========================
    PAYMENT HISTORY
 ========================= */
 
@@ -1771,10 +1494,224 @@ async function adminLogin() {
 
 
 /* =========================
+   OWNER SCHOOL ACTION
+========================= */
+
+async function ownerSchoolAction(
+  action,
+  schoolId
+) {
+
+  const functionName =
+    action === "approve"
+      ? "owner_approve_school"
+      : "owner_reject_school";
+
+  /*
+    The owner RPC uses the school ID.
+    The first form is the normal call.
+  */
+
+  try {
+
+    return await supabase(
+      "/rest/v1/rpc/" +
+      functionName,
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          p_school_id:
+            schoolId
+        })
+      }
+    );
+
+  } catch (firstError) {
+
+    /*
+      Compatibility fallback for the
+      existing database function.
+    */
+
+    try {
+
+      return await supabase(
+        "/rest/v1/rpc/" +
+        functionName,
+        {
+          method: "POST",
+
+          body: JSON.stringify({
+            p_id:
+              schoolId
+          })
+        }
+      );
+
+    } catch {
+
+      throw firstError;
+    }
+  }
+}
+
+
+/* =========================
+   APPROVE SCHOOL
+========================= */
+
+async function approveSchool(
+  schoolId,
+  schoolName
+) {
+
+  const confirmed =
+    confirm(
+      "Approve " +
+      schoolName +
+      "?\n\nThis will approve the school registration."
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+
+    await ownerSchoolAction(
+      "approve",
+      schoolId
+    );
+
+    alert(
+      schoolName +
+      " has been approved successfully."
+    );
+
+    await showAdminDashboard();
+
+  } catch (error) {
+
+    alert(
+      "Could not approve school:\n\n" +
+      error.message
+    );
+  }
+}
+
+
+/* =========================
+   REJECT SCHOOL
+========================= */
+
+async function rejectSchool(
+  schoolId,
+  schoolName
+) {
+
+  const confirmed =
+    confirm(
+      "Reject " +
+      schoolName +
+      "?\n\nThe school registration will be marked as rejected."
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+
+    await ownerSchoolAction(
+      "reject",
+      schoolId
+    );
+
+    alert(
+      schoolName +
+      " has been rejected."
+    );
+
+    await showAdminDashboard();
+
+  } catch (error) {
+
+    alert(
+      "Could not reject school:\n\n" +
+      error.message
+    );
+  }
+}
+
+
+/* =========================
    OWNER DASHBOARD
 ========================= */
 
 async function showAdminDashboard() {
+
+  app.innerHTML = `
+
+    <h2>👑 Owner Dashboard</h2>
+
+    <div class="card">
+
+      <h3>
+        Registered Schools
+      </h3>
+
+      <div id="adminSchools">
+        Loading schools...
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <h3>
+        📅 Subscription Renewal Requests
+      </h3>
+
+      <div id="adminSubscriptions">
+        Loading subscriptions...
+      </div>
+
+    </div>
+
+    <button
+      class="secondary"
+      onclick="showAdminDashboard()">
+
+      🔄 Refresh Dashboard
+
+    </button>
+
+    <button
+      class="secondary"
+      onclick="logout()">
+
+      Log out
+
+    </button>
+  `;
+
+  await loadAdminSchools();
+
+  await loadAdminSubscriptions();
+}
+
+
+/* =========================
+   LOAD ADMIN SCHOOLS
+========================= */
+
+async function loadAdminSchools() {
+
+  const container =
+    document.getElementById(
+      "adminSchools"
+    );
 
   try {
 
@@ -1783,19 +1720,86 @@ async function showAdminDashboard() {
         "/rest/v1/schools?select=*&order=created_at.desc"
       );
 
-    let schoolList = "";
-
     if (!schools.length) {
 
-      schoolList =
+      container.innerHTML =
         "<p>No schools registered yet.</p>";
 
-    } else {
+      return;
+    }
 
-      schools.forEach(
-        function(school) {
+    container.innerHTML =
+      schools.map(
+        school => {
 
-          schoolList += `
+          const status =
+            String(
+              school.status ||
+              "pending"
+            ).toLowerCase();
+
+          let statusClass =
+            "status-pending";
+
+          if (
+            status === "approved" ||
+            status === "active"
+          ) {
+
+            statusClass =
+              "status-approved";
+
+          } else if (
+            status === "rejected"
+          ) {
+
+            statusClass =
+              "status-rejected";
+          }
+
+          let actions = "";
+
+          /*
+            Pending registrations receive
+            Approve and Reject buttons.
+          */
+
+          if (
+            status === "pending"
+          ) {
+
+            actions = `
+
+              <div class="school-actions">
+
+                <button
+                  class="success-btn small-btn"
+                  onclick="approveSchool(
+                    '${escapeJs(school.id)}',
+                    '${escapeJs(school.name || "this school")}'
+                  )">
+
+                  ✓ Approve
+
+                </button>
+
+                <button
+                  class="danger-btn small-btn"
+                  onclick="rejectSchool(
+                    '${escapeJs(school.id)}',
+                    '${escapeJs(school.name || "this school")}'
+                  )">
+
+                  ✕ Reject
+
+                </button>
+
+              </div>
+
+            `;
+          }
+
+          return `
 
             <div class="school">
 
@@ -1808,61 +1812,496 @@ async function showAdminDashboard() {
 
               <br>
 
-              Status:
+              Contact:
               ${escapeHtml(
-                school.status ||
-                "Pending"
+                school.contact_name ||
+                school.contact_person ||
+                "N/A"
               )}
 
+              <br>
+
+              Phone:
+              ${escapeHtml(
+                school.contact_phone ||
+                school.phone ||
+                "N/A"
+              )}
+
+              <br>
+
+              Email:
+              ${escapeHtml(
+                school.contact_email ||
+                school.email ||
+                "N/A"
+              )}
+
+              <br>
+
+              Status:
+
+              <span
+                class="status ${statusClass}">
+
+                ${escapeHtml(
+                  school.status ||
+                  "Pending"
+                )}
+
+              </span>
+
+              ${actions}
+
             </div>
+
           `;
         }
+      ).join("");
+
+  } catch (error) {
+
+    container.innerHTML = `
+
+      <p class="error">
+
+        Could not load schools:
+        ${escapeHtml(
+          error.message
+        )}
+
+      </p>
+    `;
+  }
+}
+
+
+/* =========================
+   LOAD SUBSCRIPTIONS
+========================= */
+
+async function loadAdminSubscriptions() {
+
+  const container =
+    document.getElementById(
+      "adminSubscriptions"
+    );
+
+  try {
+
+    const renewals =
+      await supabase(
+        "/rest/v1/rpc/owner_list_subscription_renewals",
+        {
+          method: "POST"
+        }
       );
+
+    if (!renewals || !renewals.length) {
+
+      container.innerHTML =
+        "<p>No subscription renewal requests found.</p>";
+
+      return;
     }
 
-    app.innerHTML = `
+    container.innerHTML =
+      renewals.map(
+        renewal => {
 
-      <h2>👑 Owner Dashboard</h2>
+          const status =
+            String(
+              renewal.status ||
+              "pending"
+            ).toLowerCase();
 
-      <div class="card">
+          let statusClass =
+            "status-pending";
 
-        <h3>
-          Registered Schools
-        </h3>
+          if (
+            status === "approved"
+          ) {
 
-        ${schoolList}
+            statusClass =
+              "status-approved";
+
+          } else if (
+            status === "rejected"
+          ) {
+
+            statusClass =
+              "status-rejected";
+          }
+
+          return `
+
+            <div class="renewal">
+
+              <strong>
+                ${escapeHtml(
+                  renewal.school_name ||
+                  renewal.name ||
+                  "School"
+                )}
+              </strong>
+
+              <br>
+
+              Amount:
+              <strong>
+                L$${Number(
+                  renewal.amount || 0
+                ).toLocaleString()}
+              </strong>
+
+              <br>
+
+              Status:
+
+              <span
+                class="status ${statusClass}">
+
+                ${escapeHtml(
+                  renewal.status ||
+                  "Pending"
+                )}
+
+              </span>
+
+              <br>
+
+              <button
+                class="warning-btn small-btn"
+                onclick='reviewSubscription(${JSON.stringify(
+                  renewal
+                )})'>
+
+                👁️ Review
+
+              </button>
+
+            </div>
+
+          `;
+        }
+      ).join("");
+
+  } catch (error) {
+
+    container.innerHTML = `
+
+      <p class="error">
+
+        Could not load subscription requests:
+        ${escapeHtml(
+          error.message
+        )}
+
+      </p>
+    `;
+  }
+}
+
+
+/* =========================
+   REVIEW SUBSCRIPTION
+========================= */
+
+function reviewSubscription(
+  renewal
+) {
+
+  const renewalId =
+    renewal.id ||
+    renewal.renewal_id;
+
+  if (!renewalId) {
+
+    alert(
+      "This subscription request does not have a valid ID."
+    );
+
+    return;
+  }
+
+  const status =
+    String(
+      renewal.status ||
+      "pending"
+    ).toLowerCase();
+
+  let actionButtons = "";
+
+  if (
+    status === "pending"
+  ) {
+
+    actionButtons = `
+
+      <button
+        class="success-btn"
+        onclick="approveSubscription(
+          '${escapeJs(renewalId)}'
+        )">
+
+        ✓ Approve Subscription
+
+      </button>
+
+      <button
+        class="danger-btn"
+        onclick="rejectSubscription(
+          '${escapeJs(renewalId)}'
+        )">
+
+        ✕ Reject Subscription
+
+      </button>
+
+    `;
+  }
+
+  app.innerHTML = `
+
+    <h2>👁️ Review Subscription</h2>
+
+    <div class="card">
+
+      <h3>
+        Subscription Renewal Details
+      </h3>
+
+      <div class="review-box">
+
+        <div class="review-row">
+
+          <span>
+            School
+          </span>
+
+          <strong>
+            ${escapeHtml(
+              renewal.school_name ||
+              renewal.name ||
+              "N/A"
+            )}
+          </strong>
+
+        </div>
+
+        <div class="review-row">
+
+          <span>
+            Amount
+          </span>
+
+          <strong>
+            L$${Number(
+              renewal.amount || 0
+            ).toLocaleString()}
+          </strong>
+
+        </div>
+
+        <div class="review-row">
+
+          <span>
+            Transaction Reference
+          </span>
+
+          <strong>
+            ${escapeHtml(
+              renewal.transaction_reference ||
+              renewal.reference ||
+              "N/A"
+            )}
+          </strong>
+
+        </div>
+
+        <div class="review-row">
+
+          <span>
+            Status
+          </span>
+
+          <strong>
+            ${escapeHtml(
+              renewal.status ||
+              "Pending"
+            )}
+          </strong>
+
+        </div>
+
+        <div class="review-row">
+
+          <span>
+            Submitted
+          </span>
+
+          <strong>
+            ${renewal.submitted_at
+              ? new Date(
+                  renewal.submitted_at
+                ).toLocaleString()
+              : "N/A"}
+          </strong>
+
+        </div>
+
+        <div class="review-row">
+
+          <span>
+            Notes
+          </span>
+
+          <strong>
+            ${escapeHtml(
+              renewal.notes ||
+              "N/A"
+            )}
+          </strong>
+
+        </div>
 
       </div>
 
-      <div class="card">
+      <br>
 
-        <h3>
-          Subscriptions
-        </h3>
-
-        <p>
-          Review school subscriptions
-          and renewal requests.
-        </p>
-
-      </div>
+      ${actionButtons}
 
       <button
         class="secondary"
-        onclick="logout()">
+        onclick="showAdminDashboard()">
 
-        Log out
+        ← Back to Owner Dashboard
 
       </button>
-    `;
+
+    </div>
+  `;
+}
+
+
+/* =========================
+   APPROVE SUBSCRIPTION
+========================= */
+
+async function approveSubscription(
+  renewalId
+) {
+
+  const confirmed =
+    confirm(
+      "Approve this subscription renewal?"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+
+    await supabase(
+      "/rest/v1/rpc/approve_subscription_renewal",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+
+          p_renewal_id:
+            renewalId
+
+        })
+      }
+    );
+
+    alert(
+      "Subscription renewal approved successfully."
+    );
+
+    await showAdminDashboard();
 
   } catch (error) {
 
     alert(
-      "Could not load Admin Dashboard:\n\n" +
+      "Could not approve subscription:\n\n" +
       error.message
     );
   }
+}
+
+
+/* =========================
+   REJECT SUBSCRIPTION
+========================= */
+
+async function rejectSubscription(
+  renewalId
+) {
+
+  const confirmed =
+    confirm(
+      "Reject this subscription renewal?"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+
+    await supabase(
+      "/rest/v1/rpc/reject_subscription_renewal",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+
+          p_renewal_id:
+            renewalId
+
+        })
+      }
+    );
+
+    alert(
+      "Subscription renewal rejected."
+    );
+
+    await showAdminDashboard();
+
+  } catch (error) {
+
+    alert(
+      "Could not reject subscription:\n\n" +
+      error.message
+    );
+  }
+}
+
+
+/* =========================
+   ESCAPE JAVASCRIPT
+========================= */
+
+function escapeJs(value) {
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+
+    return "";
+  }
+
+  return String(value)
+    .replaceAll("\\", "\\\\")
+    .replaceAll("'", "\\'")
+    .replaceAll('"', '\\"')
+    .replaceAll("\n", "\\n")
+    .replaceAll("\r", "\\r");
 }
 
 
@@ -1872,8 +2311,10 @@ async function showAdminDashboard() {
 
 function escapeHtml(value) {
 
-  if (value === null ||
-      value === undefined) {
+  if (
+    value === null ||
+    value === undefined
+  ) {
 
     return "";
   }
@@ -1911,5 +2352,5 @@ showLogin();
 
 </script>
 
-</body>
+</body> 
 </html>
