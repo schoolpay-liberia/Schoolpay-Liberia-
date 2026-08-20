@@ -1,406 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SchoolPay Liberia</title>
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f7fb;
-      color: #172033;
-    }
-
-    header {
-      background: #0b5cff;
-      color: white;
-      padding: 22px;
-    }
-
-    header h1 { margin: 0 0 6px; }
-
-    main {
-      max-width: 760px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    .card {
-      background: white;
-      padding: 22px;
-      border-radius: 15px;
-      margin-bottom: 18px;
-      box-shadow: 0 3px 15px rgba(0,0,0,.08);
-    }
-
-    input, select, button {
-      width: 100%;
-      padding: 14px;
-      margin: 7px 0;
-      border-radius: 9px;
-      font-size: 16px;
-    }
-
-    input, select {
-      border: 1px solid #ddd;
-      background: white;
-    }
-
-    button {
-      border: none;
-      background: #0b5cff;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button.secondary {
-      background: #eaf0ff;
-      color: #0b5cff;
-    }
-
-    button.success-btn { background: #168a45; }
-    button.danger-btn { background: #c62828; }
-    button.warning-btn { background: #f59e0b; }
-
-    button.small-btn {
-      width: auto;
-      padding: 10px 14px;
-      font-size: 14px;
-      margin-right: 6px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .stat {
-      background: #eef3ff;
-      padding: 18px;
-      border-radius: 12px;
-    }
-
-    .stat b {
-      display: block;
-      font-size: 25px;
-      margin-top: 7px;
-    }
-
-    .success {
-      background: #e8f7ed;
-      padding: 13px;
-      border-radius: 9px;
-      margin-bottom: 12px;
-    }
-
-    .school, .renewal {
-      padding: 16px;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      background: #fafcff;
-    }
-
-    .school-actions {
-      margin-top: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .school-actions button {
-      width: auto;
-      margin: 0;
-    }
-
-    .status {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-top: 6px;
-    }
-
-    .status-pending {
-      background: #fff4d6;
-      color: #8a5a00;
-    }
-
-    .status-approved {
-      background: #e4f7eb;
-      color: #16733c;
-    }
-
-    .status-rejected {
-      background: #fde8e8;
-      color: #a61b1b;
-    }
-
-    .review-box {
-      background: #f5f8ff;
-      padding: 16px;
-      border-radius: 12px;
-      margin-top: 12px;
-    }
-
-    .review-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      padding: 9px 0;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .review-row:last-child { border-bottom: none; }
-
-    .error {
-      color: #b00020;
-      margin-top: 10px;
-    }
-
-    .student-box {
-      background: #f5f8ff;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 10px;
-    }
-
-    .receipt {
-      background: white;
-      border: 2px solid #172033;
-      padding: 25px;
-      max-width: 600px;
-      margin: auto;
-    }
-
-    .receipt-header {
-      text-align: center;
-      border-bottom: 2px solid #172033;
-      padding-bottom: 15px;
-      margin-bottom: 15px;
-    }
-
-    .receipt-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
-    }
-
-    .receipt-total {
-      font-size: 20px;
-      font-weight: bold;
-      margin-top: 15px;
-    }
-
-    @media print {
-      body { background: white; }
-
-      header,
-      #app > *:not(.receipt-card) {
-        display: none !important;
-      }
-
-      .receipt-card {
-        display: block !important;
-        box-shadow: none;
-        padding: 0;
-        margin: 0;
-      }
-
-      .print-hide { display: none !important; }
-
-      .receipt {
-        border: 2px solid #000;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SchoolPay Liberia</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}
+header{background:#0b5cff;color:#fff;padding:22px}
+header h1{margin:0 0 6px}
+main{max-width:760px;margin:auto;padding:20px}
+.card{background:#fff;padding:22px;border-radius:15px;margin-bottom:18px;box-shadow:0 3px 15px rgba(0,0,0,.08)}
+input,select,button{width:100%;padding:14px;margin:7px 0;border-radius:9px;font-size:16px}
+input,select{border:1px solid #ddd;background:#fff}
+button{border:0;background:#0b5cff;color:#fff;font-weight:bold;cursor:pointer}
+button.secondary{background:#eaf0ff;color:#0b5cff}
+button.success-btn{background:#168a45}
+button.danger-btn{background:#c62828}
+button.warning-btn{background:#f59e0b}
+button.small-btn{width:auto;padding:10px 14px;font-size:14px;margin:5px 5px 0 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{background:#eef3ff;padding:18px;border-radius:12px}
+.stat b{display:block;font-size:25px;margin-top:7px}
+.success{background:#e8f7ed;padding:13px;border-radius:9px;margin-bottom:12px}
+.school,.renewal,.student-box{padding:16px;border:1px solid #e5e7eb;border-radius:12px;margin-bottom:12px;background:#fafcff}
+.school-actions{margin-top:10px}
+.status{display:inline-block;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:bold;margin-top:6px}
+.status-pending{background:#fff4d6;color:#8a5a00}
+.status-approved{background:#e4f7eb;color:#16733c}
+.status-rejected{background:#fde8e8;color:#a61b1b}
+.status-other{background:#eee;color:#555}
+.review-box{background:#f5f8ff;padding:16px;border-radius:12px;margin-top:12px}
+.review-row{display:flex;justify-content:space-between;gap:15px;padding:9px 0;border-bottom:1px solid #e5e7eb}
+.review-row:last-child{border-bottom:0}
+.error{color:#b00020;margin-top:10px}
+.receipt{background:#fff;border:2px solid #172033;padding:25px;max-width:600px;margin:auto}
+.receipt-header{text-align:center;border-bottom:2px solid #172033;padding-bottom:15px;margin-bottom:15px}
+.receipt-row{display:flex;justify-content:space-between;gap:20px;padding:8px 0;border-bottom:1px solid #eee}
+.receipt-total{font-size:20px;font-weight:bold;margin-top:15px}
+@media(max-width:600px){
+.grid{grid-template-columns:1fr}
+.review-row{flex-direction:column;gap:4px}
+}
+@media print{
+body{background:#fff}
+header,#app>h2,#app>button,#app>.card:not(.receipt-card){display:none!important}
+.receipt-card{display:block!important;box-shadow:none;padding:0;margin:0}
+.print-hide{display:none!important}
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  <h1>🏫 SchoolPay Liberia</h1>
-  <p>School Management • Payments • Subscriptions</p>
+<h1>🏫 SchoolPay Liberia</h1>
+<p>School Management • Payments • Subscriptions</p>
 </header>
 
 <main id="app"></main>
 
 <script>
 
-const SUPABASE_URL =
-  "https://kojknrbjhrkctuefvrpp.supabase.co";
+const SUPABASE_URL="https://kojknrbjhrkctuefvrpp.supabase.co";
 
-const SUPABASE_KEY =
-  "sb_publishable_fs3RMvWadGqx55xdFrosxQ_34LtxiFA";
+const SUPABASE_KEY=
+"sb_publishable_fs3RMvWadGqx55xdFrosxQ_34LtxiFA";
 
-let accessToken =
-  localStorage.getItem("schoolpay_token") || "";
+let accessToken=
+localStorage.getItem("schoolpay_token")||"";
 
-const app =
-  document.getElementById("app");
+const app=document.getElementById("app");
 
 
 /* =========================
    SUPABASE CONNECTION
 ========================= */
 
-async function supabase(path, options = {}) {
+async function supabase(path,options={}){
 
-  const headers = {
-    "apikey": SUPABASE_KEY,
-    "Content-Type": "application/json",
-    ...(options.headers || {})
-  };
+ const headers={
+   apikey:SUPABASE_KEY,
+   "Content-Type":"application/json",
+   ...(options.headers||{})
+ };
 
-  if (accessToken) {
-    headers["Authorization"] =
-      "Bearer " + accessToken;
-  }
+ if(accessToken){
+   headers.Authorization=
+   "Bearer "+accessToken;
+ }
 
-  const response = await fetch(
-    SUPABASE_URL + path,
-    {
-      ...options,
-      headers
-    }
-  );
+ const response=
+ await fetch(
+   SUPABASE_URL+path,
+   {
+     ...options,
+     headers
+   }
+ );
 
-  const text = await response.text();
+ const text=
+ await response.text();
 
-  let data = null;
+ let data=null;
 
-  try {
-    data = text ? JSON.parse(text) : null;
-  } catch {
-    data = null;
-  }
+ try{
+   data=text?JSON.parse(text):null;
+ }catch{
+   data=null;
+ }
 
-  if (!response.ok) {
-    throw new Error(
-      data?.message ||
-      data?.msg ||
-      data?.error_description ||
-      text ||
-      "Supabase request failed"
-    );
-  }
+ if(!response.ok){
 
-  return data;
+   throw new Error(
+     data?.message||
+     data?.msg||
+     data?.error_description||
+     text||
+     "Supabase request failed"
+   );
+ }
+
+ return data;
+}
+
+
+function saveSession(result){
+
+ if(result?.access_token){
+
+   accessToken=
+   result.access_token;
+
+   localStorage.setItem(
+     "schoolpay_token",
+     accessToken
+   );
+ }
+}
+
+
+function escapeHtml(value){
+
+ return String(value??"")
+ .replaceAll("&","&amp;")
+ .replaceAll("<","&lt;")
+ .replaceAll(">","&gt;")
+ .replaceAll('"',"&quot;")
+ .replaceAll("'","&#039;");
+}
+
+
+function escapeJs(value){
+
+ return String(value??"")
+ .replaceAll("\\","\\\\")
+ .replaceAll("'","\\'")
+ .replaceAll("\n","\\n")
+ .replaceAll("\r","\\r");
 }
 
 
 /* =========================
-   HELPERS
+   GET MY SCHOOL
 ========================= */
 
-function escapeHtml(value) {
+async function getMySchool(){
 
-  if (value === null || value === undefined) {
-    return "";
-  }
+ const rows=
+ await supabase(
+   "/rest/v1/schools?select=*&limit=1"
+ );
 
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
+ if(!rows?.length){
 
+   throw new Error(
+     "No school account was found."
+   );
+ }
 
-function escapeJs(value) {
-
-  if (value === null || value === undefined) {
-    return "";
-  }
-
-  return String(value)
-    .replaceAll("\\", "\\\\")
-    .replaceAll("'", "\\'")
-    .replaceAll('"', '\\"')
-    .replaceAll("\n", "\\n")
-    .replaceAll("\r", "\\r");
-}
-
-
-function generateReceiptNumber() {
-
-  const now = new Date();
-
-  return "SPL-" +
-    now.getFullYear() +
-    String(now.getMonth() + 1).padStart(2, "0") +
-    String(now.getDate()).padStart(2, "0") +
-    "-" +
-    Math.floor(100000 + Math.random() * 900000);
-}
-
-
-async function getMySchool() {
-
-  const schools = await supabase(
-    "/rest/v1/schools?select=*&limit=1"
-  );
-
-  if (!schools || schools.length === 0) {
-    throw new Error(
-      "No school account was found."
-    );
-  }
-
-  return schools[0];
-}
-
-
-/* =========================
-   HOME / LOGIN
-========================= */
-
-function showLogin() {
-
-  app.innerHTML = `
-
-    <div class="card">
-
-      <h2>School Login</h2>
-
-      <input
-        id="loginEmail"
-        type="email"
-        placeholder="Email">
-
-      <input
-        id="loginPassword"
-        type="password"
-        placeholder="Password">
-
-      <button onclick="schoolLogin()">
-        Login
-      </button>
-
-      <button
-        class="secondary"
-        onclick="showRegistration()">
-        Register Your School
-      </button>
-
-      <button
-        class="secondary"
-        onclick="showAdminLogin()">
-        Owner / Admin
-      </button>
-
-    </div>
-  `;
+ return rows[0];
 }
 
 
@@ -408,42 +187,87 @@ function showLogin() {
    SCHOOL LOGIN
 ========================= */
 
-async function schoolLogin() {
+function showLogin(){
 
-  try {
+ app.innerHTML=`
 
-    const result = await supabase(
-      "/auth/v1/token?grant_type=password",
-      {
-        method: "POST",
+ <div class="card">
 
-        body: JSON.stringify({
-          email:
-            document.getElementById("loginEmail").value,
+   <h2>School Login</h2>
 
-          password:
-            document.getElementById("loginPassword").value
-        })
-      }
-    );
+   <input
+     id="loginEmail"
+     type="email"
+     placeholder="Email">
 
-    accessToken =
-      result.access_token;
+   <input
+     id="loginPassword"
+     type="password"
+     placeholder="Password">
 
-    localStorage.setItem(
-      "schoolpay_token",
-      accessToken
-    );
+   <button onclick="schoolLogin()">
+     Login
+   </button>
 
-    showSchoolDashboard();
+   <button
+     class="secondary"
+     onclick="showRegistration()">
 
-  } catch (error) {
+     Register Your School
 
-    alert(
-      "Login failed:\n\n" +
-      error.message
-    );
-  }
+   </button>
+
+   <button
+     class="secondary"
+     onclick="showAdminLogin()">
+
+     Owner / Admin
+
+   </button>
+
+ </div>
+
+ `;
+}
+
+
+async function schoolLogin(){
+
+ try{
+
+   const result=
+   await supabase(
+     "/auth/v1/token?grant_type=password",
+     {
+       method:"POST",
+
+       body:JSON.stringify({
+
+         email:
+         document.getElementById(
+           "loginEmail"
+         ).value.trim(),
+
+         password:
+         document.getElementById(
+           "loginPassword"
+         ).value
+
+       })
+     }
+   );
+
+   saveSession(result);
+
+   await showSchoolDashboard();
+
+ }catch(error){
+
+   alert(
+     "Login failed:\n\n"+
+     error.message
+   );
+ }
 }
 
 
@@ -451,131 +275,141 @@ async function schoolLogin() {
    SCHOOL REGISTRATION
 ========================= */
 
-function showRegistration() {
+function showRegistration(){
 
-  app.innerHTML = `
+ app.innerHTML=`
 
-    <div class="card">
+ <div class="card">
 
-      <h2>Register Your School</h2>
+   <h2>Register Your School</h2>
 
-      <input
-        id="schoolName"
-        placeholder="School name">
+   <input
+     id="schoolName"
+     placeholder="School name">
 
-      <input
-        id="contactName"
-        placeholder="Contact person's name">
+   <input
+     id="contactName"
+     placeholder="Contact person's name">
 
-      <input
-        id="schoolPhone"
-        placeholder="Phone number">
+   <input
+     id="schoolPhone"
+     placeholder="Phone number">
 
-      <input
-        id="schoolEmail"
-        type="email"
-        placeholder="Email">
+   <input
+     id="schoolEmail"
+     type="email"
+     placeholder="Email">
 
-      <input
-        id="schoolPassword"
-        type="password"
-        placeholder="Password">
+   <input
+     id="schoolPassword"
+     type="password"
+     placeholder="Password">
 
-      <button onclick="registerSchool()">
-        Submit Registration
-      </button>
+   <button onclick="registerSchool()">
+     Submit Registration
+   </button>
 
-      <button
-        class="secondary"
-        onclick="showLogin()">
-        Back
-      </button>
+   <button
+     class="secondary"
+     onclick="showLogin()">
 
-    </div>
-  `;
+     Back
+
+   </button>
+
+ </div>
+
+ `;
 }
 
 
-async function registerSchool() {
+async function registerSchool(){
 
-  try {
+ try{
 
-    const account = await supabase(
-      "/auth/v1/signup",
-      {
-        method: "POST",
+   const name=
+   document.getElementById(
+     "schoolName"
+   ).value.trim();
 
-        body: JSON.stringify({
+   const contact=
+   document.getElementById(
+     "contactName"
+   ).value.trim();
 
-          email:
-            document.getElementById(
-              "schoolEmail"
-            ).value,
+   const phone=
+   document.getElementById(
+     "schoolPhone"
+   ).value.trim();
 
-          password:
-            document.getElementById(
-              "schoolPassword"
-            ).value
-        })
-      }
-    );
+   const email=
+   document.getElementById(
+     "schoolEmail"
+   ).value.trim();
 
-    if (account.access_token) {
+   const password=
+   document.getElementById(
+     "schoolPassword"
+   ).value;
 
-      accessToken =
-        account.access_token;
+   if(!name||!email||!password){
 
-      localStorage.setItem(
-        "schoolpay_token",
-        accessToken
-      );
-    }
+     throw new Error(
+       "School name, email and password are required."
+     );
+   }
 
-    await supabase(
-      "/rest/v1/rpc/register_school",
-      {
-        method: "POST",
+   const account=
+   await supabase(
+     "/auth/v1/signup",
+     {
+       method:"POST",
 
-        body: JSON.stringify({
+       body:JSON.stringify({
+         email,
+         password
+       })
+     }
+   );
 
-          p_name:
-            document.getElementById(
-              "schoolName"
-            ).value,
+   if(account?.access_token){
+     saveSession(account);
+   }
 
-          p_contact_name:
-            document.getElementById(
-              "contactName"
-            ).value,
+   await supabase(
+     "/rest/v1/rpc/register_school",
+     {
+       method:"POST",
 
-          p_contact_phone:
-            document.getElementById(
-              "schoolPhone"
-            ).value,
+       body:JSON.stringify({
 
-          p_contact_email:
-            document.getElementById(
-              "schoolEmail"
-            ).value,
+         p_name:name,
 
-          p_logo_url: null
-        })
-      }
-    );
+         p_contact_name:contact,
 
-    alert(
-      "Your school registration has been submitted."
-    );
+         p_contact_phone:phone,
 
-    showLogin();
+         p_contact_email:email,
 
-  } catch (error) {
+         p_logo_url:null
 
-    alert(
-      "Registration failed:\n\n" +
-      error.message
-    );
-  }
+       })
+     }
+   );
+
+   alert(
+     "Your school registration has been submitted."
+   );
+
+   logout();
+
+ }catch(error){
+
+   alert(
+     "Registration failed:\n\n"+
+     error.message
+   );
+ }
 }
 
 
@@ -583,99 +417,162 @@ async function registerSchool() {
    SCHOOL DASHBOARD
 ========================= */
 
-async function showSchoolDashboard() {
+async function showSchoolDashboard(){
 
-  app.innerHTML = `
+ app.innerHTML=`
 
-    <h2>School Dashboard</h2>
+ <h2>School Dashboard</h2>
 
-    <div class="grid">
+ <div class="grid">
 
-      <div class="stat">
-        Students
-        <b id="studentCount">0</b>
-      </div>
+   <div class="stat">
+     Students
+     <b id="studentCount">0</b>
+   </div>
 
-      <div class="stat">
-        Payments
-        <b id="paymentTotal">L$0</b>
-      </div>
+   <div class="stat">
+     Payments
+     <b id="paymentTotal">L$0</b>
+   </div>
 
-    </div>
+ </div>
 
-    <div class="card">
+ <div class="card">
 
-      <div class="success">
-        ✓ School account connected
-      </div>
+   <div id="schoolStatus"
+        class="success">
 
-      <button onclick="showStudents()">
-        👨‍🎓 Students
-      </button>
+     Loading school account...
 
-      <button onclick="showPayments()">
-        💰 Tuition / Payments
-      </button>
+   </div>
 
-      <button onclick="showPaymentHistory()">
-        📜 Payment History
-      </button>
+   <button onclick="showStudents()">
+     👨‍🎓 Students
+   </button>
 
-      <button onclick="showRenewal()">
-        📅 Subscription / Renewal
-      </button>
+   <button onclick="showPayments()">
+     💰 Tuition / Payments
+   </button>
 
-    </div>
+   <button onclick="showPaymentHistory()">
+     📜 Payment History
+   </button>
 
-    <button
-      class="secondary"
-      onclick="logout()">
-      Log out
-    </button>
-  `;
+   <button onclick="showRenewal()">
+     📅 Subscription / Renewal
+   </button>
 
-  try {
+ </div>
 
-    const students = await supabase(
-      "/rest/v1/students?select=id"
-    );
+ <button
+   class="secondary"
+   onclick="logout()">
 
-    document.getElementById(
-      "studentCount"
-    ).textContent =
-      students.length;
+   Log out
 
-  } catch {
+ </button>
 
-    document.getElementById(
-      "studentCount"
-    ).textContent = "0";
-  }
+ `;
 
-  try {
 
-    const payments = await supabase(
-      "/rest/v1/payments?select=amount"
-    );
+ try{
 
-    const total =
-      payments.reduce(
-        (sum, payment) =>
-          sum + Number(payment.amount || 0),
-        0
-      );
+   const school=
+   await getMySchool();
 
-    document.getElementById(
-      "paymentTotal"
-    ).textContent =
-      "L$" + total.toLocaleString();
+   const status=
+   String(
+     school.status||"pending"
+   ).toLowerCase();
 
-  } catch {
+   const expiry=
+   school.subscription_expires_at
+   ?new Date(
+     school.subscription_expires_at
+   )
+   :null;
 
-    document.getElementById(
-      "paymentTotal"
-    ).textContent = "L$0";
-  }
+   const active=
+   status==="active" &&
+   expiry &&
+   expiry>=new Date();
+
+   document.getElementById(
+     "schoolStatus"
+   ).innerHTML=
+
+   active
+
+   ?`✓ ${escapeHtml(
+       school.name
+     )} — Subscription active until ${
+       expiry.toLocaleDateString()
+     }`
+
+   :`⚠ ${escapeHtml(
+       school.name
+     )} — Account status: ${
+       escapeHtml(
+         school.status||"Pending"
+       )
+     }`;
+
+ }catch(error){
+
+   document.getElementById(
+     "schoolStatus"
+   ).innerHTML=
+   "⚠ "+
+   escapeHtml(error.message);
+ }
+
+
+ try{
+
+   const students=
+   await supabase(
+     "/rest/v1/students?select=id"
+   );
+
+   document.getElementById(
+     "studentCount"
+   ).textContent=
+   students.length;
+
+ }catch{
+
+   document.getElementById(
+     "studentCount"
+   ).textContent="0";
+ }
+
+
+ try{
+
+   const payments=
+   await supabase(
+     "/rest/v1/payments?select=amount"
+   );
+
+   const total=
+   payments.reduce(
+     (a,p)=>
+       a+Number(p.amount||0),
+     0
+   );
+
+   document.getElementById(
+     "paymentTotal"
+   ).textContent=
+   "L$"+
+   total.toLocaleString();
+
+ }catch{
+
+   document.getElementById(
+     "paymentTotal"
+   ).textContent="L$0";
+ }
 }
 
 
@@ -683,67 +580,71 @@ async function showSchoolDashboard() {
    STUDENTS
 ========================= */
 
-function showStudents() {
+function showStudents(){
 
-  app.innerHTML = `
+ app.innerHTML=`
 
-    <div class="card">
+ <div class="card">
 
-      <h2>Add Student</h2>
+   <h2>Add Student</h2>
 
-      <input
-        id="studentName"
-        placeholder="Student full name">
+   <input
+     id="studentName"
+     placeholder="Student full name">
 
-      <input
-        id="studentId"
-        placeholder="Student ID">
+   <input
+     id="studentId"
+     placeholder="Student ID">
 
-      <select id="studentGrade">
+   <select id="studentGrade">
 
-        <option value="">
-          Select Class / Grade
-        </option>
+     <option value="">
+       Select Class / Grade
+     </option>
 
-        <option>Grade 7</option>
-        <option>Grade 8</option>
-        <option>Grade 9</option>
-        <option>Grade 10</option>
-        <option>Grade 11</option>
-        <option>Grade 12</option>
+     <option>Grade 7</option>
+     <option>Grade 8</option>
+     <option>Grade 9</option>
+     <option>Grade 10</option>
+     <option>Grade 11</option>
+     <option>Grade 12</option>
 
-      </select>
+   </select>
 
-      <input
-        id="tuitionAmount"
-        type="number"
-        min="0"
-        placeholder="Tuition amount (L$)">
+   <input
+     id="tuitionAmount"
+     type="number"
+     min="0"
+     placeholder="Tuition amount (L$)">
 
-      <button onclick="addStudent()">
-        Save Student
-      </button>
+   <button onclick="addStudent()">
+     Save Student
+   </button>
 
-      <button
-        class="secondary"
-        onclick="showSchoolDashboard()">
-        Back
-      </button>
+   <button
+     class="secondary"
+     onclick="showSchoolDashboard()">
 
-    </div>
+     Back
 
-    <div class="card">
+   </button>
 
-      <h3>Registered Students</h3>
+ </div>
 
-      <div id="studentList">
-        Loading students...
-      </div>
 
-    </div>
-  `;
+ <div class="card">
 
-  loadStudents();
+   <h3>Registered Students</h3>
+
+   <div id="studentList">
+     Loading students...
+   </div>
+
+ </div>
+
+ `;
+
+ loadStudents();
 }
 
 
@@ -751,101 +652,83 @@ function showStudents() {
    ADD STUDENT
 ========================= */
 
-async function addStudent() {
+async function addStudent(){
 
-  try {
+ try{
 
-    const name =
-      document.getElementById(
-        "studentName"
-      ).value.trim();
+   const id=
+   document.getElementById(
+     "studentId"
+   ).value.trim();
 
-    const id =
-      document.getElementById(
-        "studentId"
-      ).value.trim();
+   const name=
+   document.getElementById(
+     "studentName"
+   ).value.trim();
 
-    const grade =
-      document.getElementById(
-        "studentGrade"
-      ).value;
+   const grade=
+   document.getElementById(
+     "studentGrade"
+   ).value;
 
-    const tuition =
-      Number(
-        document.getElementById(
-          "tuitionAmount"
-        ).value
-      );
+   const tuition=
+   Number(
+     document.getElementById(
+       "tuitionAmount"
+     ).value
+   );
 
-    if (!name) {
-      throw new Error(
-        "Please enter the student's name."
-      );
-    }
+   if(!id||!name||!grade){
 
-    if (!id) {
-      throw new Error(
-        "Please enter the student's ID."
-      );
-    }
+     throw new Error(
+       "Student ID, name and class are required."
+     );
+   }
 
-    if (!grade) {
-      throw new Error(
-        "Please select the student's class."
-      );
-    }
+   if(
+     Number.isNaN(tuition)||
+     tuition<0
+   ){
 
-    if (tuition < 0) {
-      throw new Error(
-        "Please enter a valid tuition amount."
-      );
-    }
+     throw new Error(
+       "Please enter a valid tuition amount."
+     );
+   }
 
-    const school =
-      await getMySchool();
+   await supabase(
+     "/rest/v1/rpc/add_student",
+     {
+       method:"POST",
 
-    await supabase(
-      "/rest/v1/students",
-      {
-        method: "POST",
+       body:JSON.stringify({
 
-        headers: {
-          "Prefer": "return=minimal"
-        },
+         p_student_id:id,
 
-        body: JSON.stringify({
+         p_full_name:name,
 
-          school_id:
-            school.id,
+         p_class_name:grade,
 
-          full_name:
-            name,
+         p_tuition_amount:tuition
 
-          student_id:
-            id,
+       })
+     }
+   );
 
-          class_name:
-            grade,
+   alert(
+     "Student saved successfully."
+   );
 
-          tuition_amount:
-            tuition
-        })
-      }
-    );
+   showStudents();
 
-    alert(
-      "Student saved successfully."
-    );
+ }catch(error){
 
-    showStudents();
+   alert(
+     "Could not save student:\n\n"+
+     error.message
+   );
+ }
 
-  } catch (error) {
 
-    alert(
-      "Could not save student:\n\n" +
-      error.message
-    );
-  }
 }
 
 
@@ -853,67 +736,86 @@ async function addStudent() {
    LOAD STUDENTS
 ========================= */
 
-async function loadStudents() {
+async function loadStudents(){
 
-  const list =
-    document.getElementById(
-      "studentList"
-    );
+ const box=
+ document.getElementById(
+   "studentList"
+ );
 
-  try {
+ try{
 
-    const students = await supabase(
-      "/rest/v1/students?select=id,student_id,full_name,class_name,tuition_amount&order=created_at.desc"
-    );
+   const rows=
+   await supabase(
+     "/rest/v1/students?select=id,student_id,full_name,class_name,tuition_amount,student_name,grade&order=created_at.desc"
+   );
 
-    if (!students.length) {
+   if(!rows.length){
 
-      list.innerHTML =
-        "<p>No students registered yet.</p>";
+     box.innerHTML=
+       "<p>No students registered yet.</p>";
 
-      return;
-    }
+     return;
+   }
 
-    list.innerHTML =
-      students.map(student => `
+   box.innerHTML=
 
-        <div class="student-box">
+   rows.map(
+     s=>`
 
-          <strong>
-            ${escapeHtml(student.full_name)}
-          </strong>
+     <div class="student-box">
 
-          <br>
+       <strong>
+         ${escapeHtml(
+           s.full_name||
+           s.student_name
+         )}
+       </strong>
 
-          Student ID:
-          ${escapeHtml(student.student_id)}
+       <br>
 
-          <br>
+       Student ID:
+       ${escapeHtml(
+         s.student_id
+       )}
 
-          Class:
-          ${escapeHtml(student.class_name || "")}
+       <br>
 
-          <br>
+       Class:
+       ${escapeHtml(
+         s.class_name||
+         s.grade
+       )}
 
-          Tuition:
-          <strong>
-            L${Number(
-              student.tuition_amount || 0
-            ).toLocaleString()}
-          </strong>
+       <br>
 
-        </div>
+       Tuition:
 
-      `).join("");
+       <strong>
+         L$${Number(
+           s.tuition_amount||0
+         ).toLocaleString()}
+       </strong>
 
-  } catch (error) {
+     </div>
 
-    list.innerHTML =
-      `<p class="error">
-        Could not load students:
-        ${escapeHtml(error.message)}
-      </p>`;
-  }
+     `
+   ).join("");
+
+ }catch(error){
+
+   box.innerHTML=
+
+   `<p class="error">
+
+     Could not load students:
+
+     ${escapeHtml(
+       error.message
+     )}
+
+   </p>`;
+ }
 }
 
 
@@ -921,194 +823,211 @@ async function loadStudents() {
    PAYMENTS
 ========================= */
 
-async function showPayments() {
+let selectedStudent=null;
 
-  app.innerHTML = `
 
-    <div class="card">
+async function showPayments(){
 
-      <h2>Record Tuition Payment</h2>
+ selectedStudent=null;
 
-      <input
-        id="paymentStudentId"
-        placeholder="Enter Student ID"
-        oninput="findStudentForPayment()">
+ app.innerHTML=`
 
-      <div id="paymentStudentInfo"></div>
+ <div class="card">
 
-      <input
-        id="paymentAmount"
-        type="number"
-        min="1"
-        placeholder="Amount paid (L$)">
+   <h2>Record Tuition Payment</h2>
 
-      <select id="paymentMethod">
+   <input
+     id="paymentStudentId"
+     placeholder="Enter Student ID"
+     oninput="findStudentForPayment()">
 
-        <option value="">
-          Select Payment Method
-        </option>
+   <div id="paymentStudentInfo"></div>
 
-        <option value="cash">
-          Cash
-        </option>
+   <input
+     id="paymentAmount"
+     type="number"
+     min="1"
+     placeholder="Amount paid (L$)">
 
-        <option value="mobile_money">
-          Mobile Money
-        </option>
+   <select id="paymentMethod">
 
-        <option value="bank">
-          Bank Transfer
-        </option>
+     <option value="">
+       Select Payment Method
+     </option>
 
-        <option value="other">
-          Other
-        </option>
+     <option value="cash">
+       Cash
+     </option>
 
-      </select>
+     <option value="mobile_money">
+       Mobile Money
+     </option>
 
-      <input
-        id="paymentReference"
-        placeholder="Transaction reference (optional)">
+     <option value="bank">
+       Bank Transfer
+     </option>
 
-      <input
-        id="paymentNotes"
-        placeholder="Notes (optional)">
+     <option value="other">
+       Other
+     </option>
 
-      <button
-        class="success-btn"
-        onclick="recordPayment()">
-        Record Payment & Generate Receipt
-      </button>
+   </select>
 
-      <button
-        class="secondary"
-        onclick="showSchoolDashboard()">
-        Back
-      </button>
+   <input
+     id="paymentReference"
+     placeholder="Transaction reference (optional)">
 
-    </div>
-  `;
+   <input
+     id="paymentNotes"
+     placeholder="Notes (optional)">
+
+   <button
+     class="success-btn"
+     onclick="recordPayment()">
+
+     Record Payment & Generate Receipt
+
+   </button>
+
+   <button
+     class="secondary"
+     onclick="showSchoolDashboard()">
+
+     Back
+
+   </button>
+
+ </div>
+
+ `;
 }
 
 
-let selectedStudent = null;
-
-
 /* =========================
-   FIND STUDENT
+   FIND STUDENT FOR PAYMENT
 ========================= */
 
-async function findStudentForPayment() {
+async function findStudentForPayment(){
 
-  const id =
-    document.getElementById(
-      "paymentStudentId"
-    ).value.trim();
+ const id=
+ document.getElementById(
+   "paymentStudentId"
+ ).value.trim();
 
-  const box =
-    document.getElementById(
-      "paymentStudentInfo"
-    );
+ const box=
+ document.getElementById(
+   "paymentStudentInfo"
+ );
 
-  selectedStudent = null;
+ selectedStudent=null;
 
-  if (!id) {
-    box.innerHTML = "";
-    return;
-  }
+ if(!id){
 
-  try {
+   box.innerHTML="";
+   return;
+ }
 
-    const students = await supabase(
-      "/rest/v1/students?select=id,student_id,full_name,class_name,tuition_amount&student_id=eq." +
-      encodeURIComponent(id) +
-      "&limit=1"
-    );
+ try{
 
-    if (!students.length) {
+   const rows=
+   await supabase(
+     "/rest/v1/students?select=id,student_id,full_name,class_name,tuition_amount,student_name,grade&student_id=eq."+
+     encodeURIComponent(id)+
+     "&limit=1"
+   );
 
-      box.innerHTML = `
-        <div class="error">
-          Student not found.
-        </div>
-      `;
+   if(!rows.length){
 
-      return;
-    }
+     box.innerHTML=
+     `<div class="error">
+       Student not found.
+     </div>`;
 
-    selectedStudent =
-      students[0];
+     return;
+   }
 
-    const payments = await supabase(
-      "/rest/v1/payments?select=amount&student_id=eq." +
-      encodeURIComponent(
-        selectedStudent.id
-      )
-    );
+   selectedStudent=
+   rows[0];
 
-    const paid =
-      payments.reduce(
-        (sum, payment) =>
-          sum + Number(payment.amount || 0),
-        0
-      );
+   const summary=
+   await supabase(
+     "/rest/v1/rpc/get_student_payment_summary",
+     {
+       method:"POST",
 
-    const tuition =
-      Number(
-        selectedStudent.tuition_amount || 0
-      );
+       body:JSON.stringify({
+         p_student_id:id
+       })
+     }
+   );
 
-    const balance =
-      Math.max(
-        tuition - paid,
-        0
-      );
+   const s=
+   Array.isArray(summary)
+   ?summary[0]
+   :summary;
 
-    box.innerHTML = `
+   box.innerHTML=`
 
-      <div class="student-box">
+   <div class="student-box">
 
-        <strong>
-          ${escapeHtml(
-            selectedStudent.full_name
-          )}
-        </strong>
+     <strong>
+       ${escapeHtml(
+         s?.student_name||
+         selectedStudent.full_name||
+         selectedStudent.student_name
+       )}
+     </strong>
 
-        <br>
+     <br>
 
-        Class:
-        ${escapeHtml(
-          selectedStudent.class_name || ""
-        )}
+     Class:
+     ${escapeHtml(
+       s?.class_name||
+       selectedStudent.class_name||
+       selectedStudent.grade||
+       ""
+     )}
 
-        <br>
+     <br>
 
-        Tuition:
-        L${tuition.toLocaleString()}
+     Tuition:
+     L$${Number(
+       s?.tuition_amount||
+       selectedStudent.tuition_amount||
+       0
+     ).toLocaleString()}
 
-        <br>
+     <br>
 
-        Already Paid:
-        L${paid.toLocaleString()}
+     Paid:
+     L$${Number(
+       s?.total_paid||0
+     ).toLocaleString()}
 
-        <br>
+     <br>
 
-        <strong>
-          Balance:
-          L${balance.toLocaleString()}
-        </strong>
+     <strong>
+       Balance:
+       L$${Number(
+         s?.remaining_balance||0
+       ).toLocaleString()}
+     </strong>
 
-      </div>
-    `;
+   </div>
 
-  } catch (error) {
+   `;
 
-    box.innerHTML = `
-      <div class="error">
-        ${escapeHtml(error.message)}
-      </div>
-    `;
-  }
+ }catch(error){
+
+   box.innerHTML=
+   `<div class="error">
+
+     ${escapeHtml(
+       error.message
+     )}
+
+   </div>`;
+ }
 }
 
 
@@ -1116,111 +1035,686 @@ async function findStudentForPayment() {
    RECORD PAYMENT
 ========================= */
 
-async function recordPayment() {
+async function recordPayment(){
 
-  try {
+ try{
 
-    const studentId =
-      document.getElementById(
-        "paymentStudentId"
-      ).value.trim();
+   const id=
+   document.getElementById(
+     "paymentStudentId"
+   ).value.trim();
 
-    const amount =
-      Number(
-        document.getElementById(
-          "paymentAmount"
-        ).value
-      );
+   const amount=
+   Number(
+     document.getElementById(
+       "paymentAmount"
+     ).value
+   );
 
-    const method =
-      document.getElementById(
-        "paymentMethod"
-      ).value;
+   const method=
+   document.getElementById(
+     "paymentMethod"
+   ).value;
 
-    const reference =
-      document.getElementById(
-        "paymentReference"
-      ).value.trim();
+   const notes=
+   document.getElementById(
+     "paymentNotes"
+   ).value.trim();
 
-    const notes =
-      document.getElementById(
-        "paymentNotes"
-      ).value.trim();
+   if(!id){
 
-    if (!studentId) {
-      throw new Error(
-        "Please enter a Student ID."
-      );
-    }
+     throw new Error(
+       "Please enter a Student ID."
+     );
+   }
 
-    if (!selectedStudent) {
+   if(!amount||amount<=0){
 
-      const students =
-        await supabase(
-          "/rest/v1/students?select=id,student_id,full_name,class_name,tuition_amount&student_id=eq." +
-          encodeURIComponent(studentId) +
-          "&limit=1"
-        );
+     throw new Error(
+       "Please enter a valid payment amount."
+     );
+   }
 
-      if (!students.length) {
-        throw new Error(
-          "Student was not found."
-        );
-      }
+   if(!method){
 
-      selectedStudent =
-        students[0];
-    }
+     throw new Error(
+       "Please select a payment method."
+     );
+   }
 
-    if (!amount || amount <= 0) {
-      throw new Error(
-        "Please enter a/* =========================
-   OWNER SCHOOL ACTION
+   const result=
+   await supabase(
+     "/rest/v1/rpc/record_student_payment",
+     {
+       method:"POST",
+
+       body:JSON.stringify({
+
+         p_student_id:id,
+
+         p_amount:amount,
+
+         p_payment_method:method,
+
+         p_notes:
+           notes||null
+
+       })
+     }
+   );
+
+   const receipt=
+   Array.isArray(result)
+   ?result[0]
+   :result;
+
+   if(!receipt){
+
+     throw new Error(
+       "Payment was saved but no receipt was returned."
+     );
+   }
+
+   showReceipt(receipt);
+
+ }catch(error){
+
+   alert(
+     "Could not record payment:\n\n"+
+     error.message
+   );
+ }
+}
+
+
+/* =========================
+   RECEIPT
 ========================= */
 
-async function ownerSchoolAction(
-  action,
-  schoolId
-) {
+function showReceipt(r){
 
-  const functionName =
-    action === "approve"
-      ? "owner_approve_school"
-      : "owner_reject_school";
+ app.innerHTML=`
 
-  try {
+ <div class="card receipt-card">
 
-    return await supabase(
-      "/rest/v1/rpc/" + functionName,
-      {
-        method: "POST",
+   <div class="receipt">
 
-        body: JSON.stringify({
-          p_school_id: schoolId
-        })
-      }
-    );
+     <div class="receipt-header">
 
-  } catch (firstError) {
+       <h2>
+         🏫 SchoolPay Liberia
+       </h2>
 
-    try {
+       <p>
+         Official Tuition Payment Receipt
+       </p>
 
-      return await supabase(
-        "/rest/v1/rpc/" + functionName,
-        {
-          method: "POST",
+     </div>
 
-          body: JSON.stringify({
-            p_id: schoolId
-          })
-        }
-      );
+     <div class="receipt-row">
+       <span>Receipt No.</span>
+       <strong>
+         ${escapeHtml(
+           r.receipt_number
+         )}
+       </strong>
+     </div>
 
-    } catch {
+     <div class="receipt-row">
+       <span>School</span>
+       <strong>
+         ${escapeHtml(
+           r.school_name
+         )}
+       </strong>
+     </div>
 
-      throw firstError;
-    }
-  }
+     <div class="receipt-row">
+       <span>Student</span>
+       <strong>
+         ${escapeHtml(
+           r.student_name
+         )}
+       </strong>
+     </div>
+
+     <div class="receipt-row">
+       <span>Payment</span>
+       <strong>
+         L$${Number(
+           r.payment_amount||0
+         ).toLocaleString()}
+       </strong>
+     </div>
+
+     <div class="receipt-row">
+       <span>Method</span>
+       <strong>
+         ${escapeHtml(
+           r.payment_method
+         )}
+       </strong>
+     </div>
+
+     <div class="receipt-row">
+       <span>Paid</span>
+       <strong>
+         ${new Date(
+           r.paid_at
+         ).toLocaleString()}
+       </strong>
+     </div>
+
+     <div class="receipt-total">
+
+       Remaining Balance:
+
+       L$${Number(
+         r.remaining_balance||0
+       ).toLocaleString()}
+
+     </div>
+
+   </div>
+
+   <button
+     class="print-hide"
+     onclick="window.print()">
+
+     🖨️ Print Receipt
+
+   </button>
+
+   <button
+     class="secondary print-hide"
+     onclick="showSchoolDashboard()">
+
+     Back to Dashboard
+
+   </button>
+
+ </div>
+
+ `;
+}/* =========================
+   PAYMENT HISTORY
+========================= */
+
+function showPaymentHistory(){
+
+ app.innerHTML=`
+
+ <div class="card">
+
+   <h2>Payment History</h2>
+
+   <div id="paymentHistory">
+     Loading...
+   </div>
+
+   <button
+     class="secondary"
+     onclick="showSchoolDashboard()">
+
+     Back
+
+   </button>
+
+ </div>
+
+ `;
+
+ loadPaymentHistory();
+}
+
+
+async function loadPaymentHistory(){
+
+ const box=
+ document.getElementById(
+   "paymentHistory"
+ );
+
+ try{
+
+   const rows=
+   await supabase(
+     "/rest/v1/payments?select=id,amount,payment_method,receipt_number,paid_at,notes,student_id&order=paid_at.desc"
+   );
+
+   if(!rows.length){
+
+     box.innerHTML=
+       "<p>No payments recorded yet.</p>";
+
+     return;
+   }
+
+   box.innerHTML=
+
+   rows.map(
+     p=>`
+
+     <div class="student-box">
+
+       <strong>
+         Receipt:
+         ${escapeHtml(
+           p.receipt_number
+         )}
+       </strong>
+
+       <br>
+
+       Amount:
+       L$${Number(
+         p.amount||0
+       ).toLocaleString()}
+
+       <br>
+
+       Method:
+       ${escapeHtml(
+         p.payment_method
+       )}
+
+       <br>
+
+       Date:
+       ${new Date(
+         p.paid_at
+       ).toLocaleString()}
+
+       <br>
+
+       <button
+         class="small-btn"
+         onclick='loadReceipt(${JSON.stringify(p)})'>
+
+         View Receipt
+
+       </button>
+
+     </div>
+
+     `
+   ).join("");
+
+ }catch(error){
+
+   box.innerHTML=
+
+   `<p class="error">
+
+     Could not load payments:
+
+     ${escapeHtml(
+       error.message
+     )}
+
+   </p>`;
+ }
+}
+
+
+async function loadReceipt(p){
+
+ try{
+
+   const students=
+   await supabase(
+     "/rest/v1/students?id=eq."+
+     encodeURIComponent(
+       p.student_id
+     )+
+     "&select=full_name,student_name,tuition_amount&limit=1"
+   );
+
+   const school=
+   await getMySchool();
+
+   showReceipt({
+
+     receipt_number:
+       p.receipt_number,
+
+     school_name:
+       school.name,
+
+     student_name:
+       students[0]?.full_name||
+       students[0]?.student_name||
+       "Student",
+
+     payment_amount:
+       p.amount,
+
+     payment_method:
+       p.payment_method,
+
+     paid_at:
+       p.paid_at,
+
+     remaining_balance:
+       0
+
+   });
+
+ }catch(error){
+
+   alert(
+     "Could not open receipt:\n\n"+
+     error.message
+   );
+ }
+}
+
+
+/* =========================
+   SUBSCRIPTION / RENEWAL
+========================= */
+
+function showRenewal(){
+
+ app.innerHTML=`
+
+ <div class="card">
+
+   <h2>
+     Subscription / Renewal
+   </h2>
+
+   <div id="currentSubscription">
+
+     Loading subscription...
+
+   </div>
+
+   <input
+     id="renewAmount"
+     type="number"
+     min="0"
+     placeholder="Amount (L$)">
+
+   <input
+     id="renewReference"
+     placeholder="Transaction reference">
+
+   <input
+     id="renewNotes"
+     placeholder="Notes (optional)">
+
+   <button onclick="submitRenewal()">
+
+     Submit Renewal
+
+   </button>
+
+   <button
+     class="secondary"
+     onclick="showSchoolDashboard()">
+
+     Back
+
+   </button>
+
+ </div>
+
+ `;
+
+ loadCurrentSubscription();
+}
+
+
+async function loadCurrentSubscription(){
+
+ const box=
+ document.getElementById(
+   "currentSubscription"
+ );
+
+ try{
+
+   const school=
+   await getMySchool();
+
+   box.innerHTML=`
+
+   <div class="review-box">
+
+     <div class="review-row">
+
+       <span>School</span>
+
+       <strong>
+         ${escapeHtml(
+           school.name
+         )}
+       </strong>
+
+     </div>
+
+     <div class="review-row">
+
+       <span>Status</span>
+
+       <strong>
+         ${escapeHtml(
+           school.status
+         )}
+       </strong>
+
+     </div>
+
+     <div class="review-row">
+
+       <span>
+         Subscription expires
+       </span>
+
+       <strong>
+
+         ${
+           school.subscription_expires_at
+           ?new Date(
+             school.subscription_expires_at
+           ).toLocaleString()
+           :"Not active"
+         }
+
+       </strong>
+
+     </div>
+
+   </div>
+
+   `;
+
+ }catch(error){
+
+   box.innerHTML=
+
+   `<p class="error">
+
+     ${escapeHtml(
+       error.message
+     )}
+
+   </p>`;
+ }
+}
+
+
+async function submitRenewal(){
+
+ try{
+
+   const amount=
+   Number(
+     document.getElementById(
+       "renewAmount"
+     ).value
+   );
+
+   const ref=
+   document.getElementById(
+     "renewReference"
+   ).value.trim();
+
+   const notes=
+   document.getElementById(
+     "renewNotes"
+   ).value.trim();
+
+   if(
+     Number.isNaN(amount)||
+     amount<0
+   ){
+
+     throw new Error(
+       "Enter a valid amount."
+     );
+   }
+
+   if(!ref){
+
+     throw new Error(
+       "Transaction reference is required."
+     );
+   }
+
+   await supabase(
+     "/rest/v1/rpc/submit_subscription_renewal",
+     {
+       method:"POST",
+
+       body:JSON.stringify({
+
+         p_amount:
+           amount,
+
+         p_transaction_reference:
+           ref,
+
+         p_notes:
+           notes||null
+
+       })
+     }
+   );
+
+   alert(
+     "Renewal request submitted for owner review."
+   );
+
+   showSchoolDashboard();
+
+ }catch(error){
+
+   alert(
+     "Could not submit renewal:\n\n"+
+     error.message
+   );
+ }
+}
+
+
+/* =========================
+   OWNER LOGIN
+========================= */
+
+function showAdminLogin(){
+
+ app.innerHTML=`
+
+ <div class="card">
+
+   <h2>
+     Owner / Admin
+   </h2>
+
+   <input
+     id="adminEmail"
+     type="email"
+     placeholder="Admin email">
+
+   <input
+     id="adminPassword"
+     type="password"
+     placeholder="Admin password">
+
+   <button onclick="adminLogin()">
+
+     Sign In
+
+   </button>
+
+   <button
+     class="secondary"
+     onclick="showLogin()">
+
+     Back
+
+   </button>
+
+ </div>
+
+ `;
+}
+
+
+async function adminLogin(){
+
+ try{
+
+   const result=
+   await supabase(
+     "/auth/v1/token?grant_type=password",
+     {
+       method:"POST",
+
+       body:JSON.stringify({
+
+         email:
+         document.getElementById(
+           "adminEmail"
+         ).value.trim(),
+
+         password:
+         document.getElementById(
+           "adminPassword"
+         ).value
+
+       })
+     }
+   );
+
+   saveSession(result);
+
+   const owner=
+   await supabase(
+     "/rest/v1/rpc/is_owner",
+     {
+       method:"POST"
+     }
+   );
+
+   if(!owner){
+
+     throw new Error(
+       "This account is not an owner account."
+     );
+   }
+
+   await showAdminDashboard();
+
+ }catch(error){
+
+   alert(
+     "Admin login failed:\n\n"+
+     error.message
+   );
+ }
 }
 
 
@@ -1229,39 +1723,53 @@ async function ownerSchoolAction(
 ========================= */
 
 async function approveSchool(
-  schoolId,
-  schoolName
-) {
+ id,
+ name
+){
 
-  if (!confirm(
-    "Approve " +
-    schoolName +
-    "?\n\nThis will approve the school registration."
-  )) {
-    return;
-  }
+ if(
+   !confirm(
+     "Approve "+
+     name+
+     "?\n\n"+
+     "This will activate the school for 6 months."
+   )
+ ){
 
-  try {
+   return;
+ }
 
-    await ownerSchoolAction(
-      "approve",
-      schoolId
-    );
+ try{
 
-    alert(
-      schoolName +
-      " has been approved successfully."
-    );
+   await supabase(
+     "/rest/v1/rpc/admin_approve_school",
+     {
+       method:"POST",
 
-    await showAdminDashboard();
+       body:JSON.stringify({
 
-  } catch (error) {
+         p_school_id:id,
 
-    alert(
-      "Could not approve school:\n\n" +
-      error.message
-    );
-  }
+         p_months:6
+
+       })
+     }
+   );
+
+   alert(
+     name+
+     " has been approved."
+   );
+
+   showAdminDashboard();
+
+ }catch(error){
+
+   alert(
+     "Could not approve school:\n\n"+
+     error.message
+   );
+ }
 }
 
 
@@ -1270,39 +1778,103 @@ async function approveSchool(
 ========================= */
 
 async function rejectSchool(
-  schoolId,
-  schoolName
-) {
+ id,
+ name
+){
 
-  if (!confirm(
-    "Reject " +
-    schoolName +
-    "?\n\nThe school registration will be marked as rejected."
-  )) {
-    return;
-  }
+ if(
+   !confirm(
+     "Reject "+
+     name+
+     "?"
+   )
+ ){
 
-  try {
+   return;
+ }
 
-    await ownerSchoolAction(
-      "reject",
-      schoolId
-    );
+ try{
 
-    alert(
-      schoolName +
-      " has been rejected."
-    );
+   await supabase(
+     "/rest/v1/rpc/owner_reject_school",
+     {
+       method:"POST",
 
-    await showAdminDashboard();
+       body:JSON.stringify({
 
-  } catch (error) {
+         p_school_id:id
 
-    alert(
-      "Could not reject school:\n\n" +
-      error.message
-    );
-  }
+       })
+     }
+   );
+
+   alert(
+     name+
+     " has been rejected."
+   );
+
+   showAdminDashboard();
+
+ }catch(error){
+
+   alert(
+     "Could not reject school:\n\n"+
+     error.message
+   );
+ }
+}
+
+
+/* =========================
+   REMOVE SCHOOL
+========================= */
+
+async function deleteSchool(
+ id,
+ name
+){
+
+ if(
+   !confirm(
+     "REMOVE "+
+     name+
+     " permanently?\n\n"+
+     "This deletes the school, students, payments, renewals, profiles and audit records for that school."
+   )
+ ){
+
+   return;
+ }
+
+ try{
+
+   await supabase(
+     "/rest/v1/rpc/owner_delete_school",
+     {
+       method:"POST",
+
+       body:JSON.stringify({
+
+         p_school_id:id
+
+       })
+     }
+   );
+
+   alert(
+     name+
+     " was removed successfully."
+   );
+
+   showAdminDashboard();
+
+ }catch(error){
+
+   alert(
+     "Could not remove school:\n\n"+
+     error.message
+   );
+ }
 }
 
 
@@ -1310,221 +1882,282 @@ async function rejectSchool(
    OWNER DASHBOARD
 ========================= */
 
-async function showAdminDashboard() {
+async function showAdminDashboard(){
 
-  app.innerHTML = `
+ app.innerHTML=`
 
-    <h2>👑 Owner Dashboard</h2>
+ <h2>
+   👑 Owner Dashboard
+ </h2>
 
-    <div class="card">
+ <div class="card">
 
-      <h3>
-        🏫 Registered Schools
-      </h3>
+   <h3>
+     Registered Schools
+   </h3>
 
-      <div id="adminSchools">
-        Loading schools...
-      </div>
+   <div id="adminSchools">
 
-    </div>
+     Loading schools...
 
-    <div class="card">
+   </div>
 
-      <h3>
-        📅 Subscription Renewal Requests
-      </h3>
+ </div>
 
-      <div id="adminSubscriptions">
-        Loading subscriptions...
-      </div>
 
-    </div>
+ <div class="card">
 
-    <button
-      class="secondary"
-      onclick="showAdminDashboard()">
-      🔄 Refresh Dashboard
-    </button>
+   <h3>
+     📅 Subscription Renewal Requests
+   </h3>
 
-    <button
-      class="secondary"
-      onclick="logout()">
-      Log out
-    </button>
-  `;
+   <div id="adminSubscriptions">
 
-  await loadAdminSchools();
-  await loadAdminSubscriptions();
+     Loading subscriptions...
+
+   </div>
+
+ </div>
+
+
+ <button
+   class="secondary"
+   onclick="showAdminDashboard()">
+
+   🔄 Refresh Dashboard
+
+ </button>
+
+
+ <button
+   class="secondary"
+   onclick="logout()">
+
+   Log out
+
+ </button>
+
+ `;
+
+ await loadAdminSchools();
+
+ await loadAdminSubscriptions();
 }
 
 
 /* =========================
-   LOAD SCHOOLS
+   LOAD ADMIN SCHOOLS
 ========================= */
 
-async function loadAdminSchools() {
+async function loadAdminSchools(){
 
-  const container =
-    document.getElementById(
-      "adminSchools"
-    );
+ const box=
+ document.getElementById(
+   "adminSchools"
+ );
 
-  try {
+ try{
 
-    const schools =
-      await supabase(
-        "/rest/v1/schools?select=*&order=created_at.desc"
-      );
+   const rows=
+   await supabase(
+     "/rest/v1/schools?select=*&order=created_at.desc"
+   );
 
-    if (!schools.length) {
+   if(!rows.length){
 
-      container.innerHTML =
-        "<p>No schools registered yet.</p>";
+     box.innerHTML=
+       "<p>No schools registered yet.</p>";
 
-      return;
-    }
+     return;
+   }
 
-    container.innerHTML =
-      schools.map(school => {
 
-        const status =
-          String(
-            school.status || "pending"
-          ).toLowerCase();
+   box.innerHTML=
 
-        let statusClass =
-          "status-pending";
+   rows.map(
+     school=>{
 
-        if (
-          status === "approved" ||
-          status === "active"
-        ) {
+       const status=
+       String(
+         school.status||
+         "pending"
+       ).toLowerCase();
 
-          statusClass =
-            "status-approved";
 
-        } else if (
-          status === "rejected"
-        ) {
+       const cls=
 
-          statusClass =
-            "status-rejected";
-        }
+       status==="pending"
+       ?"status-pending"
 
-        let actions = "";
+       :
 
-        if (
-          status === "pending"
-        ) {
+       status==="active"
+       ?"status-approved"
 
-          actions = `
+       :
 
-            <div class="school-actions">
+       status==="rejected"
+       ?"status-rejected"
 
-              <button
-                class="success-btn small-btn"
-                onclick="approveSchool(
-                  '${escapeJs(school.id)}',
-                  '${escapeJs(
-                    school.name ||
-                    "this school"
-                  )}'
-                )">
+       :
+       "status-other";
 
-                ✓ Approve
 
-              </button>
+       return `
 
-              <button
-                class="danger-btn small-btn"
-                onclick="rejectSchool(
-                  '${escapeJs(school.id)}',
-                  '${escapeJs(
-                    school.name ||
-                    "this school"
-                  )}'
-                )">
+       <div class="school">
 
-                ✕ Reject
+         <b>
+           ${escapeHtml(
+             school.name||
+             "School"
+           )}
+         </b>
 
-              </button>
+         <br>
 
-            </div>
-          `;
-        }
+         Contact:
+         ${escapeHtml(
+           school.contact_name||
+           "N/A"
+         )}
 
-        return `
+         <br>
 
-          <div class="school">
+         Phone:
+         ${escapeHtml(
+           school.contact_phone||
+           "N/A"
+         )}
 
-            <b>
-              ${escapeHtml(
-                school.name ||
-                "School"
-              )}
-            </b>
+         <br>
 
-            <br>
+         Email:
+         ${escapeHtml(
+           school.contact_email||
+           "N/A"
+         )}
 
-            Contact:
-            ${escapeHtml(
-              school.contact_name ||
-              school.contact_person ||
-              "N/A"
-            )}
+         <br>
 
-            <br>
+         Status:
 
-            Phone:
-            ${escapeHtml(
-              school.contact_phone ||
-              school.phone ||
-              "N/A"
-            )}
+         <span
+           class="status ${cls}">
 
-            <br>
+           ${escapeHtml(
+             school.status||
+             "Pending"
+           )}
 
-            Email:
-            ${escapeHtml(
-              school.contact_email ||
-              school.email ||
-              "N/A"
-            )}
+         </span>
 
-            <br>
+         ${
+           school.subscription_expires_at
 
-            Status:
+           ?`
 
-            <span
-              class="status ${statusClass}">
+           <br>
 
-              ${escapeHtml(
-                school.status ||
-                "Pending"
-              )}
+           Subscription expires:
 
-            </span>
+           ${new Date(
+             school.subscription_expires_at
+           ).toLocaleString()}
 
-            ${actions}
+           `
 
-          </div>
-        `;
-      }).join("");
+           :""
+         }
 
-  } catch (error) {
 
-    container.innerHTML = `
+         <div
+           class="school-actions">
 
-      <p class="error">
+           ${
+             status==="pending"
 
-        Could not load schools:
-        ${escapeHtml(
-          error.message
-        )}
+             ?`
 
-      </p>
-    `;
-  }
+             <button
+               class="success-btn small-btn"
+               onclick="approveSchool(
+                 '${escapeJs(
+                   school.id
+                 )}',
+                 '${escapeJs(
+                   school.name||
+                   "this school"
+                 )}'
+               )">
+
+               ✓ Approve
+
+             </button>
+
+
+             <button
+               class="danger-btn small-btn"
+               onclick="rejectSchool(
+                 '${escapeJs(
+                   school.id
+                 )}',
+                 '${escapeJs(
+                   school.name||
+                   "this school"
+                 )}'
+               )">
+
+               ✕ Reject
+
+             </button>
+
+             `
+
+             :""
+           }
+
+
+           <button
+             class="danger-btn small-btn"
+             onclick="deleteSchool(
+               '${escapeJs(
+                 school.id
+               )}',
+               '${escapeJs(
+                 school.name||
+                 "this school"
+               )}'
+             )">
+
+             🗑 Remove School
+
+           </button>
+
+         </div>
+
+       </div>
+
+       `;
+
+     }
+   ).join("");
+
+
+ }catch(error){
+
+   box.innerHTML=
+
+   `<p class="error">
+
+     Could not load schools:
+
+     ${escapeHtml(
+       error.message
+     )}
+
+   </p>`;
+ }
 }
 
 
@@ -1532,133 +2165,159 @@ async function loadAdminSchools() {
    LOAD SUBSCRIPTIONS
 ========================= */
 
-async function loadAdminSubscriptions() {
+async function loadAdminSubscriptions(){
 
-  const container =
-    document.getElementById(
-      "adminSubscriptions"
-    );
+ const box=
+ document.getElementById(
+   "adminSubscriptions"
+ );
 
-  try {
+ try{
 
-    const renewals =
-      await supabase(
-        "/rest/v1/rpc/owner_list_subscription_renewals",
-        {
-          method: "POST"
-        }
-      );
+   const rows=
+   await supabase(
+     "/rest/v1/rpc/owner_list_subscription_renewals",
+     {
+       method:"POST"
+     }
+   );
 
-    if (
-      !renewals ||
-      !renewals.length
-    ) {
+   if(
+     !rows||
+     !rows.length
+   ){
 
-      container.innerHTML =
-        "<p>No subscription renewal requests found.</p>";
+     box.innerHTML=
+       "<p>No subscription renewal requests found.</p>";
 
-      return;
-    }
+     return;
+   }
 
-    container.innerHTML =
-      renewals.map(renewal => {
 
-        const status =
-          String(
-            renewal.status ||
-            "pending"
-          ).toLowerCase();
+   box.innerHTML=
 
-        let statusClass =
-          "status-pending";
+   rows.map(
+     renewal=>{
 
-        if (
-          status === "approved"
-        ) {
+       const status=
+       String(
+         renewal.status||
+         "pending"
+       ).toLowerCase();
 
-          statusClass =
-            "status-approved";
 
-        } else if (
-          status === "rejected"
-        ) {
+       const cls=
 
-          statusClass =
-            "status-rejected";
-        }
+       status==="pending"
+       ?"status-pending"
 
-        const renewalData =
-          encodeURIComponent(
-            JSON.stringify(renewal)
-          );
+       :
 
-        return `
+       status==="approved"
+       ?"status-approved"
 
-          <div class="renewal">
+       :
+       "status-rejected";
 
-            <strong>
-              ${escapeHtml(
-                renewal.school_name ||
-                renewal.name ||
-                "School"
-              )}
-            </strong>
 
-            <br>
+       return `
 
-            Amount:
+       <div class="renewal">
 
-            <strong>
-              L$${Number(
-                renewal.amount || 0
-              ).toLocaleString()}
-            </strong>
+         <strong>
 
-            <br>
+           ${escapeHtml(
+             renewal.school_name||
+             "School"
+           )}
 
-            Status:
+         </strong>
 
-            <span
-              class="status ${statusClass}">
+         <br>
 
-              ${escapeHtml(
-                renewal.status ||
-                "Pending"
-              )}
+         Amount:
 
-            </span>
+         <strong>
 
-            <br>
+           L$${Number(
+             renewal.amount||0
+           ).toLocaleString()}
 
-            <button
-              class="warning-btn small-btn"
-              onclick="reviewSubscriptionEncoded(
-                '${renewalData}'
-              )">
+         </strong>
 
-              👁️ Review
+         <br>
 
-            </button>
+         Reference:
 
-          </div>
+         ${escapeHtml(
+           renewal.transaction_reference||
+           "N/A"
+         )}
 
-        `;
-      }).join("");
+         <br>
 
-  } catch (error) {
+         Status:
 
-    container.innerHTML = `
+         <span
+           class="status ${cls}">
 
-      <p class="error">
+           ${escapeHtml(
+             renewal.status||
+             "Pending"
+           )}
 
-        Could not load subscription requests:
-        ${escapeHtml(
-          error.message
-        )}
+         </span>
 
-      </p>
-    `;
-  }
+         <br>
+
+         Submitted:
+
+         ${
+           renewal.submitted_at
+
+           ?new Date(
+             renewal.submitted_at
+           ).toLocaleString()
+
+           :"N/A"
+         }
+
+         <br>
+
+         <button
+           class="warning-btn small-btn"
+           onclick='reviewSubscription(
+             ${JSON.stringify(
+               renewal
+             )}
+           )'>
+
+           👁️ Review
+
+         </button>
+
+       </div>
+
+       `;
+
+     }
+   ).join("");
+
+
+ }catch(error){
+
+   box.innerHTML=
+
+   `<p class="error">
+
+     Could not load subscription requests:
+
+     ${escapeHtml(
+       error.message
+     )}
+
+   </p>`;
+ }
 }
 
 
@@ -1666,288 +2325,324 @@ async function loadAdminSubscriptions() {
    REVIEW SUBSCRIPTION
 ========================= */
 
-function reviewSubscriptionEncoded(
-  encoded
-) {
-
-  try {
-
-    const renewal =
-      JSON.parse(
-        decodeURIComponent(encoded)
-      );
-
-    reviewSubscription(
-      renewal
-    );
-
-  } catch {
-
-    alert(
-      "Could not open this subscription request."
-    );
-  }
-}
-
-
 function reviewSubscription(
-  renewal
-) {
+ renewal
+){
 
-  const renewalId =
-    renewal.id ||
-    renewal.renewal_id;
+ const status=
+ String(
+   renewal.status||
+   "pending"
+ ).toLowerCase();
 
-  if (!renewalId) {
 
-    alert(
-      "This subscription request does not have a valid ID."
-    );
+ app.innerHTML=`
 
-    return;
-  }
+ <h2>
+   👁️ Review Subscription
+ </h2>
 
-  const status =
-    String(
-      renewal.status ||
-      "pending"
-    ).toLowerCase();
+ <div class="card">
 
-  let actionButtons = "";
+   <h3>
+     Subscription Renewal Details
+   </h3>
 
-  if (
-    status === "pending"
-  ) {
 
-    actionButtons = `
+   <div class="review-box">
 
-      <button
-        class="success-btn"
-        onclick="approveSubscription(
-          '${escapeJs(renewalId)}'
-        )">
+     <div class="review-row">
 
-        ✓ Approve Subscription
+       <span>
+         School
+       </span>
 
-      </button>
+       <strong>
+         ${escapeHtml(
+           renewal.school_name
+         )}
+       </strong>
 
-      <button
-        class="danger-btn"
-        onclick="rejectSubscription(
-          '${escapeJs(renewalId)}'
-        )">
+     </div>
 
-        ✕ Reject Subscription
 
-      </button>
+     <div class="review-row">
 
-    `;
-  }
+       <span>
+         Amount
+       </span>
 
-  app.innerHTML = `
+       <strong>
 
-    <h2>👁️ Review Subscription</h2>
+         L$${Number(
+           renewal.amount||0
+         ).toLocaleString()}
 
-    <div class="card">
+       </strong>
 
-      <h3>
-        Subscription Renewal Details
-      </h3>
+     </div>
 
-      <div class="review-box">
 
-        <div class="review-row">
+     <div class="review-row">
 
-          <span>School</span>
+       <span>
+         Transaction Reference
+       </span>
 
-          <strong>
-            ${escapeHtml(
-              renewal.school_name ||
-              renewal.name ||
-              "N/A"
-            )}
-          </strong>
+       <strong>
 
-        </div>
+         ${escapeHtml(
+           renewal.transaction_reference||
+           "N/A"
+         )}
 
-        <div class="review-row">
+       </strong>
 
-          <span>Amount</span>
+     </div>
 
-          <strong>
-            L$${Number(
-              renewal.amount || 0
-            ).toLocaleString()}
-          </strong>
 
-        </div>
+     <div class="review-row">
 
-        <div class="review-row">
+       <span>
+         Status
+       </span>
 
-          <span>
-            Transaction Reference
-          </span>
+       <strong>
 
-          <strong>
-            ${escapeHtml(
-              renewal.transaction_reference ||
-              renewal.reference ||
-              "N/A"
-            )}
-          </strong>
+         ${escapeHtml(
+           renewal.status||
+           "Pending"
+         )}
 
-        </div>
+       </strong>
 
-        <div class="review-row">
+     </div>
 
-          <span>Status</span>
 
-          <strong>
-            ${escapeHtml(
-              renewal.status ||
-              "Pending"
-            )}
-          </strong>
+     <div class="review-row">
 
-        </div>
+       <span>
+         Submitted
+       </span>
 
-        <div class="review-row">
+       <strong>
 
-          <span>Submitted</span>
+         ${
+           renewal.submitted_at
 
-          <strong>
-            ${
-              renewal.submitted_at
-                ? new Date(
-                    renewal.submitted_at
-                  ).toLocaleString()
-                : renewal.created_at
-                  ? new Date(
-                      renewal.created_at
-                    ).toLocaleString()
-                  : "N/A"
-            }
-          </strong>
+           ?new Date(
+             renewal.submitted_at
+           ).toLocaleString()
 
-        </div>
+           :"N/A"
+         }
 
-        <div class="review-row">
+       </strong>
 
-          <span>Notes</span>
+     </div>
 
-          <strong>
-            ${escapeHtml(
-              renewal.notes ||
-              "N/A"
-            )}
-          </strong>
 
-        </div>
+     <div class="review-row">
 
-      </div>
+       <span>
+         Reviewed
+       </span>
 
-      <br>
+       <strong>
 
-      ${actionButtons}
+         ${
+           renewal.reviewed_at
 
-      <button
-        class="secondary"
-        onclick="showAdminDashboard()">
+           ?new Date(
+             renewal.reviewed_at
+           ).toLocaleString()
 
-        ← Back to Owner Dashboard
+           :"Not reviewed"
+         }
 
-      </button>
+       </strong>
 
-    </div>
-  `;
+     </div>
+
+
+     <div class="review-row">
+
+       <span>
+         Notes
+       </span>
+
+       <strong>
+
+         ${escapeHtml(
+           renewal.notes||
+           "N/A"
+         )}
+
+       </strong>
+
+     </div>
+
+   </div>
+
+
+   <br>
+
+
+   ${
+     status==="pending"
+
+     ?`
+
+     <button
+       class="success-btn"
+       onclick="approveSubscription(
+         '${escapeJs(
+           renewal.id
+         )}'
+       )">
+
+       ✓ Approve Subscription
+
+     </button>
+
+
+     <button
+       class="danger-btn"
+       onclick="rejectSubscription(
+         '${escapeJs(
+           renewal.id
+         )}'
+       )">
+
+       ✕ Reject Subscription
+
+     </button>
+
+     `
+
+     :""
+   }
+
+
+   <button
+     class="secondary"
+     onclick="showAdminDashboard()">
+
+     ← Back to Owner Dashboard
+
+   </button>
+
+ </div>
+
+ `;
 }
 
 
 /* =========================
-   APPROVE SUBSCRIPTION
+   REVIEW RENEWAL
 ========================= */
 
-async function approveSubscription(
-  renewalId
-) {
+async function reviewRenewal(
+ id,
+ approve
+){
 
-  if (!confirm(
-    "Approve this subscription renewal?"
-  )) {
-    return;
-  }
+ const notes=
+ prompt(
+   approve
+   ?"Optional approval note:"
+   :"Reason for rejection (optional):",
+   ""
+ );
 
-  try {
 
-    await supabase(
-      "/rest/v1/rpc/approve_subscription_renewal",
-      {
-        method: "POST",
+ try{
 
-        body: JSON.stringify({
-          p_renewal_id:
-            renewalId
-        })
-      }
-    );
+   await supabase(
+     "/rest/v1/rpc/admin_review_renewal",
+     {
+       method:"POST",
 
-    alert(
-      "Subscription renewal approved successfully."
-    );
+       body:JSON.stringify({
 
-    await showAdminDashboard();
+         p_renewal_id:
+           id,
 
-  } catch (error) {
+         p_approve:
+           approve,
 
-    alert(
-      "Could not approve subscription:\n\n" +
-      error.message
-    );
-  }
+         p_months:
+           6,
+
+         p_notes:
+           notes||null
+
+       })
+     }
+   );
+
+
+   alert(
+
+     approve
+
+     ?"Subscription renewal approved successfully."
+
+     :
+
+     "Subscription renewal rejected successfully."
+
+   );
+
+
+   showAdminDashboard();
+
+
+ }catch(error){
+
+   alert(
+     "Could not review subscription:\n\n"+
+     error.message
+   );
+ }
 }
 
 
-/* =========================
-   REJECT SUBSCRIPTION
-========================= */
+function approveSubscription(
+ id
+){
 
-async function rejectSubscription(
-  renewalId
-) {
+ if(
+   confirm(
+     "Approve this subscription renewal for 6 months?"
+   )
+ ){
 
-  if (!confirm(
-    "Reject this subscription renewal?"
-  )) {
-    return;
-  }
+   reviewRenewal(
+     id,
+     true
+   );
 
-  try {
+ }
+}
 
-    await supabase(
-      "/rest/v1/rpc/reject_subscription_renewal",
-      {
-        method: "POST",
 
-        body: JSON.stringify({
-          p_renewal_id:
-            renewalId
-        })
-      }
-    );
+function rejectSubscription(
+ id
+){
 
-    alert(
-      "Subscription renewal rejected."
-    );
+ if(
+   confirm(
+     "Reject this subscription renewal?"
+   )
+ ){
 
-    await showAdminDashboard();
+   reviewRenewal(
+     id,
+     false
+   );
 
-  } catch (error) {
-
-    alert(
-      "Could not reject subscription:\n\n" +
-      error.message
-    );
-  }
+ }
 }
 
 
@@ -1955,15 +2650,15 @@ async function rejectSubscription(
    LOGOUT
 ========================= */
 
-function logout() {
+function logout(){
 
-  accessToken = "";
+ accessToken="";
 
-  localStorage.removeItem(
-    "schoolpay_token"
-  );
+ localStorage.removeItem(
+   "schoolpay_token"
+ );
 
-  showLogin();
+ showLogin();
 }
 
 
