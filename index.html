@@ -36,6 +36,7 @@ button.small-btn{width:auto;padding:10px 14px;font-size:14px;margin:5px 5px 0 0}
 .error{color:#b00020;margin-top:10px}
 .receipt{background:#fff;border:2px solid #172033;padding:25px;max-width:600px;margin:auto}
 .receipt-header{text-align:center;border-bottom:2px solid #172033;padding-bottom:15px;margin-bottom:15px}
+.receipt-header h2{margin:0 0 8px}
 .receipt-row{display:flex;justify-content:space-between;gap:20px;padding:8px 0;border-bottom:1px solid #eee}
 .receipt-total{font-size:20px;font-weight:bold;margin-top:15px}
 @media(max-width:600px){
@@ -1115,6 +1116,19 @@ async function recordPayment(){
      );
    }
 
+   /*
+      IMPORTANT FIX:
+      Always get the currently logged-in school's
+      registered name and put it into the receipt.
+   */
+
+   const school=
+   await getMySchool();
+
+   receipt.school_name=
+     school.name||
+     "School";
+
    showReceipt(receipt);
 
  }catch(error){
@@ -1131,7 +1145,37 @@ async function recordPayment(){
    RECEIPT
 ========================= */
 
-function showReceipt(r){
+async function showReceipt(r){
+
+ /*
+    IMPORTANT FIX:
+    If the receipt does not already contain the
+    school's name, get it directly from the
+    registered school account.
+ */
+
+ let schoolName=
+   r?.school_name||
+   "";
+
+ if(!schoolName){
+
+   try{
+
+     const school=
+       await getMySchool();
+
+     schoolName=
+       school?.name||
+       "School";
+
+   }catch{
+
+     schoolName=
+       "School";
+
+   }
+ }
 
  app.innerHTML=`
 
@@ -1141,8 +1185,15 @@ function showReceipt(r){
 
      <div class="receipt-header">
 
+       <!--
+         THE REGISTERED SCHOOL NAME IS NOW
+         THE MAIN RECEIPT HEADING.
+       -->
+
        <h2>
-         🏫 SchoolPay Liberia
+         🏫 ${escapeHtml(
+           schoolName
+         )}
        </h2>
 
        <p>
@@ -1164,7 +1215,7 @@ function showReceipt(r){
        <span>School</span>
        <strong>
          ${escapeHtml(
-           r.school_name
+           schoolName
          )}
        </strong>
      </div>
@@ -1203,41 +1254,7 @@ function showReceipt(r){
            r.paid_at
          ).toLocaleString()}
        </strong>
-     </div>
-
-     <div class="receipt-total">
-
-       Remaining Balance:
-
-       L$${Number(
-         r.remaining_balance||0
-       ).toLocaleString()}
-
-     </div>
-
-   </div>
-
-   <button
-     class="print-hide"
-     onclick="window.print()">
-
-     🖨️ Print Receipt
-
-   </button>
-
-   <button
-     class="secondary print-hide"
-     onclick="showSchoolDashboard()">
-
-     Back to Dashboard
-
-   </button>
-
- </div>
-
- `;
-}
-   /* =========================
+ /* =========================
    PAYMENT HISTORY
 ========================= */
 
@@ -1374,7 +1391,12 @@ async function loadReceipt(p){
    const school=
    await getMySchool();
 
-   showReceipt({
+   /*
+      The registered school's name is explicitly
+      passed into the receipt.
+   */
+
+   await showReceipt({
 
      receipt_number:
        p.receipt_number,
