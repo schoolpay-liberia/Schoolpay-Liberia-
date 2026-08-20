@@ -4,49 +4,296 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SchoolPay Liberia</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}
-header{background:#0b5cff;color:#fff;padding:22px}
-header h1{margin:0 0 6px}
-main{max-width:760px;margin:auto;padding:20px}
-.card{background:#fff;padding:22px;border-radius:15px;margin-bottom:18px;box-shadow:0 3px 15px rgba(0,0,0,.08)}
-input,select,button{width:100%;padding:14px;margin:7px 0;border-radius:9px;font-size:16px}
-input,select{border:1px solid #ddd;background:#fff}
-button{border:0;background:#0b5cff;color:#fff;font-weight:bold;cursor:pointer}
-button.secondary{background:#eaf0ff;color:#0b5cff}
-button.success-btn{background:#168a45}
-button.danger-btn{background:#c62828}
-button.warning-btn{background:#f59e0b}
-button.small-btn{width:auto;padding:10px 14px;font-size:14px;margin:5px 5px 0 0}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.stat{background:#eef3ff;padding:18px;border-radius:12px}
-.stat b{display:block;font-size:25px;margin-top:7px}
-.success{background:#e8f7ed;padding:13px;border-radius:9px;margin-bottom:12px}
-.school,.renewal,.student-box{padding:16px;border:1px solid #e5e7eb;border-radius:12px;margin-bottom:12px;background:#fafcff}
-.school-actions{margin-top:10px}
-.status{display:inline-block;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:bold;margin-top:6px}
-.status-pending{background:#fff4d6;color:#8a5a00}
-.status-approved{background:#e4f7eb;color:#16733c}
-.status-rejected{background:#fde8e8;color:#a61b1b}
-.status-other{background:#eee;color:#555}
-.review-box{background:#f5f8ff;padding:16px;border-radius:12px;margin-top:12px}
-.review-row{display:flex;justify-content:space-between;gap:15px;padding:9px 0;border-bottom:1px solid #e5e7eb}
-.review-row:last-child{border-bottom:0}
-.error{color:#b00020;margin-top:10px}
-.receipt{background:#fff;border:2px solid #172033;padding:25px;max-width:600px;margin:auto}
-.receipt-header{text-align:center;border-bottom:2px solid #172033;padding-bottom:15px;margin-bottom:15px}
-.receipt-row{display:flex;justify-content:space-between;gap:20px;padding:8px 0;border-bottom:1px solid #eee}
-.receipt-total{font-size:20px;font-weight:bold;margin-top:15px}
-@media(max-width:600px){
-.grid{grid-template-columns:1fr}
-.review-row{flex-direction:column;gap:4px}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f4f7fb;
+  color:#172033
 }
+
+header{
+  background:#0b5cff;
+  color:#fff;
+  padding:22px
+}
+
+header h1{
+  margin:0 0 6px
+}
+
+main{
+  max-width:760px;
+  margin:auto;
+  padding:20px
+}
+
+.card{
+  background:#fff;
+  padding:22px;
+  border-radius:15px;
+  margin-bottom:18px;
+  box-shadow:0 3px 15px rgba(0,0,0,.08)
+}
+
+input,select,button{
+  width:100%;
+  padding:14px;
+  margin:7px 0;
+  border-radius:9px;
+  font-size:16px
+}
+
+input,select{
+  border:1px solid #ddd;
+  background:#fff
+}
+
+button{
+  border:0;
+  background:#0b5cff;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer
+}
+
+button.secondary{
+  background:#eaf0ff;
+  color:#0b5cff
+}
+
+button.success-btn{
+  background:#168a45
+}
+
+button.danger-btn{
+  background:#c62828
+}
+
+button.warning-btn{
+  background:#f59e0b
+}
+
+button.small-btn{
+  width:auto;
+  padding:10px 14px;
+  font-size:14px;
+  margin:5px 5px 0 0
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px
+}
+
+.stat{
+  background:#eef3ff;
+  padding:18px;
+  border-radius:12px
+}
+
+.stat b{
+  display:block;
+  font-size:25px;
+  margin-top:7px
+}
+
+.success{
+  background:#e8f7ed;
+  padding:13px;
+  border-radius:9px;
+  margin-bottom:12px
+}
+
+.school,.renewal,.student-box{
+  padding:16px;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  margin-bottom:12px;
+  background:#fafcff
+}
+
+.school-actions{
+  margin-top:10px
+}
+
+.status{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+  margin-top:6px
+}
+
+.status-pending{
+  background:#fff4d6;
+  color:#8a5a00
+}
+
+.status-approved{
+  background:#e4f7eb;
+  color:#16733c
+}
+
+.status-rejected{
+  background:#fde8e8;
+  color:#a61b1b
+}
+
+.status-other{
+  background:#eee;
+  color:#555
+}
+
+.review-box{
+  background:#f5f8ff;
+  padding:16px;
+  border-radius:12px;
+  margin-top:12px
+}
+
+.review-row{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  padding:9px 0;
+  border-bottom:1px solid #e5e7eb
+}
+
+.review-row:last-child{
+  border-bottom:0
+}
+
+.error{
+  color:#b00020;
+  margin-top:10px
+}
+
+/* =========================
+   RECEIPT
+========================= */
+
+.receipt{
+  background:#fff;
+  border:2px solid #172033;
+  padding:25px;
+  max-width:600px;
+  margin:auto
+}
+
+.receipt-header{
+  text-align:center;
+  border-bottom:2px solid #172033;
+  padding-bottom:15px;
+  margin-bottom:15px
+}
+
+.receipt-header h2{
+  margin:0 0 8px;
+  font-size:24px
+}
+
+.receipt-header p{
+  margin:0;
+  font-size:14px
+}
+
+.receipt-row{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  padding:8px 0;
+  border-bottom:1px solid #eee
+}
+
+.receipt-total{
+  font-size:20px;
+  font-weight:bold;
+  margin-top:15px;
+  padding-top:12px;
+  border-top:2px solid #172033
+}
+
+/* SIGNATURE SPACE */
+
+.receipt-signature{
+  margin-top:55px;
+  display:flex;
+  justify-content:space-between;
+  gap:40px
+}
+
+.signature-box{
+  width:45%;
+  text-align:center
+}
+
+.signature-line{
+  border-top:1px solid #172033;
+  margin-top:45px;
+  padding-top:8px;
+  font-size:14px
+}
+
+@media(max-width:600px){
+
+  .grid{
+    grid-template-columns:1fr
+  }
+
+  .review-row{
+    flex-direction:column;
+    gap:4px
+  }
+
+  .receipt-row{
+    gap:10px
+  }
+
+  .receipt-signature{
+    flex-direction:column;
+    gap:20px
+  }
+
+  .signature-box{
+    width:100%
+  }
+}
+
 @media print{
-body{background:#fff}
-header,#app>h2,#app>button,#app>.card:not(.receipt-card){display:none!important}
-.receipt-card{display:block!important;box-shadow:none;padding:0;margin:0}
-.print-hide{display:none!important}
+
+  body{
+    background:#fff
+  }
+
+  header,
+  #app>h2,
+  #app>button,
+  #app>.card:not(.receipt-card){
+    display:none!important
+  }
+
+  .receipt-card{
+    display:block!important;
+    box-shadow:none;
+    padding:0;
+    margin:0
+  }
+
+  .print-hide{
+    display:none!important
+  }
+
+  .receipt{
+    border:2px solid #172033;
+    max-width:600px;
+    margin:auto
+  }
 }
 </style>
 </head>
@@ -62,7 +309,8 @@ header,#app>h2,#app>button,#app>.card:not(.receipt-card){display:none!important}
 
 <script>
 
-const SUPABASE_URL="https://kojknrbjhrkctuefvrpp.supabase.co";
+const SUPABASE_URL=
+"https://kojknrbjhrkctuefvrpp.supabase.co";
 
 const SUPABASE_KEY=
 "sb_publishable_fs3RMvWadGqx55xdFrosxQ_34LtxiFA";
@@ -70,7 +318,8 @@ const SUPABASE_KEY=
 let accessToken=
 localStorage.getItem("schoolpay_token")||"";
 
-const app=document.getElementById("app");
+const app=
+document.getElementById("app");
 
 
 /* =========================
@@ -86,8 +335,10 @@ async function supabase(path,options={}){
  };
 
  if(accessToken){
+
    headers.Authorization=
    "Bearer "+accessToken;
+
  }
 
  const response=
@@ -105,9 +356,16 @@ async function supabase(path,options={}){
  let data=null;
 
  try{
-   data=text?JSON.parse(text):null;
+
+   data=
+   text
+   ?JSON.parse(text)
+   :null;
+
  }catch{
+
    data=null;
+
  }
 
  if(!response.ok){
@@ -119,6 +377,7 @@ async function supabase(path,options={}){
      text||
      "Supabase request failed"
    );
+
  }
 
  return data;
@@ -136,6 +395,7 @@ function saveSession(result){
      "schoolpay_token",
      accessToken
    );
+
  }
 }
 
@@ -148,6 +408,7 @@ function escapeHtml(value){
  .replaceAll(">","&gt;")
  .replaceAll('"',"&quot;")
  .replaceAll("'","&#039;");
+
 }
 
 
@@ -158,6 +419,7 @@ function escapeJs(value){
  .replaceAll("'","\\'")
  .replaceAll("\n","\\n")
  .replaceAll("\r","\\r");
+
 }
 
 
@@ -177,6 +439,7 @@ async function getMySchool(){
    throw new Error(
      "No school account was found."
    );
+
  }
 
  return rows[0];
@@ -267,6 +530,7 @@ async function schoolLogin(){
      "Login failed:\n\n"+
      error.message
    );
+
  }
 }
 
@@ -357,6 +621,7 @@ async function registerSchool(){
      throw new Error(
        "School name, email and password are required."
      );
+
    }
 
    const account=
@@ -373,7 +638,9 @@ async function registerSchool(){
    );
 
    if(account?.access_token){
+
      saveSession(account);
+
    }
 
    await supabase(
@@ -409,6 +676,7 @@ async function registerSchool(){
      "Registration failed:\n\n"+
      error.message
    );
+
  }
 }
 
@@ -426,21 +694,32 @@ async function showSchoolDashboard(){
  <div class="grid">
 
    <div class="stat">
+
      Students
-     <b id="studentCount">0</b>
+
+     <b id="studentCount">
+       0
+     </b>
+
    </div>
 
    <div class="stat">
+
      Payments
-     <b id="paymentTotal">L$0</b>
+
+     <b id="paymentTotal">
+       L$0
+     </b>
+
    </div>
 
  </div>
 
  <div class="card">
 
-   <div id="schoolStatus"
-        class="success">
+   <div
+     id="schoolStatus"
+     class="success">
 
      Loading school account...
 
@@ -524,6 +803,7 @@ async function showSchoolDashboard(){
    ).innerHTML=
    "⚠ "+
    escapeHtml(error.message);
+
  }
 
 
@@ -544,6 +824,7 @@ async function showSchoolDashboard(){
    document.getElementById(
      "studentCount"
    ).textContent="0";
+
  }
 
 
@@ -572,6 +853,7 @@ async function showSchoolDashboard(){
    document.getElementById(
      "paymentTotal"
    ).textContent="L$0";
+
  }
 }
 
@@ -645,6 +927,7 @@ function showStudents(){
  `;
 
  loadStudents();
+
 }
 
 
@@ -683,6 +966,7 @@ async function addStudent(){
      throw new Error(
        "Student ID, name and class are required."
      );
+
    }
 
    if(
@@ -693,6 +977,7 @@ async function addStudent(){
      throw new Error(
        "Please enter a valid tuition amount."
      );
+
    }
 
    await supabase(
@@ -726,8 +1011,8 @@ async function addStudent(){
      "Could not save student:\n\n"+
      error.message
    );
- }
 
+ }
 
 }
 
@@ -756,6 +1041,7 @@ async function loadStudents(){
        "<p>No students registered yet.</p>";
 
      return;
+
    }
 
    box.innerHTML=
@@ -815,6 +1101,7 @@ async function loadStudents(){
      )}
 
    </p>`;
+
  }
 }
 
@@ -900,6 +1187,7 @@ async function showPayments(){
  </div>
 
  `;
+
 }
 
 
@@ -925,6 +1213,7 @@ async function findStudentForPayment(){
 
    box.innerHTML="";
    return;
+
  }
 
  try{
@@ -944,6 +1233,7 @@ async function findStudentForPayment(){
      </div>`;
 
      return;
+
    }
 
    selectedStudent=
@@ -1027,6 +1317,7 @@ async function findStudentForPayment(){
      )}
 
    </div>`;
+
  }
 }
 
@@ -1066,6 +1357,7 @@ async function recordPayment(){
      throw new Error(
        "Please enter a Student ID."
      );
+
    }
 
    if(!amount||amount<=0){
@@ -1073,6 +1365,7 @@ async function recordPayment(){
      throw new Error(
        "Please enter a valid payment amount."
      );
+
    }
 
    if(!method){
@@ -1080,6 +1373,7 @@ async function recordPayment(){
      throw new Error(
        "Please select a payment method."
      );
+
    }
 
    const result=
@@ -1113,6 +1407,7 @@ async function recordPayment(){
      throw new Error(
        "Payment was saved but no receipt was returned."
      );
+
    }
 
    showReceipt(receipt);
@@ -1123,6 +1418,7 @@ async function recordPayment(){
      "Could not record payment:\n\n"+
      error.message
    );
+
  }
 }
 
@@ -1141,8 +1437,13 @@ function showReceipt(r){
 
      <div class="receipt-header">
 
+       <!-- SCHOOL NAME IS NOW THE RECEIPT HEADING -->
+
        <h2>
-         🏫 SchoolPay Liberia
+         ${escapeHtml(
+           r.school_name||
+           "School"
+         )}
        </h2>
 
        <p>
@@ -1152,91 +1453,35 @@ function showReceipt(r){
      </div>
 
      <div class="receipt-row">
-       <span>Receipt No.</span>
+
+       <span>
+         Receipt No.
+       </span>
+
        <strong>
          ${escapeHtml(
            r.receipt_number
          )}
        </strong>
+
      </div>
 
      <div class="receipt-row">
-       <span>School</span>
+
+       <span>
+         School
+       </span>
+
        <strong>
          ${escapeHtml(
-           r.school_name
+           r.school_name||
+           "School"
          )}
        </strong>
-     </div>
-
-     <div class="receipt-row">
-       <span>Student</span>
-       <strong>
-         ${escapeHtml(
-           r.student_name
-         )}
-       </strong>
-     </div>
-
-     <div class="receipt-row">
-       <span>Payment</span>
-       <strong>
-         L$${Number(
-           r.payment_amount||0
-         ).toLocaleString()}
-       </strong>
-     </div>
-
-     <div class="receipt-row">
-       <span>Method</span>
-       <strong>
-         ${escapeHtml(
-           r.payment_method
-         )}
-       </strong>
-     </div>
-
-     <div class="receipt-row">
-       <span>Paid</span>
-       <strong>
-         ${new Date(
-           r.paid_at
-         ).toLocaleString()}
-       </strong>
-     </div>
-
-     <div class="receipt-total">
-
-       Remaining Balance:
-
-       L$${Number(
-         r.remaining_balance||0
-       ).toLocaleString()}
 
      </div>
 
-   </div>
-
-   <button
-     class="print-hide"
-     onclick="window.print()">
-
-     🖨️ Print Receipt
-
-   </button>
-
-   <button
-     class="secondary print-hide"
-     onclick="showSchoolDashboard()">
-
-     Back to Dashboard
-
-   </button>
-
- </div>
-
- `;
-}/* =========================
+     <div class="re/* =========================
    PAYMENT HISTORY
 ========================= */
 
